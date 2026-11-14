@@ -1,0 +1,1994 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>小玉的工作台</title>
+<style>
+:root{
+  --bg:#F6F7F4; --surface:#FFFFFF; --surface2:#F9FAF8;
+  --ink:#232B28; --ink2:#65716C; --ink3:#9AA6A0;
+  --line:#E4EAE5; --brand:#2E6B58; --brand2:#3E8C6F;
+  --soft:#E7F1EB; --green:#3E7C5A; --red:#C05046;
+  --shadow:0 2px 6px rgba(35,55,45,.04),0 10px 28px rgba(35,55,45,.05);
+  --brand-dark:#245546; --soft2:#CDE2D4; --ring:rgba(46,107,88,.09);
+}
+body.dark{
+  --bg:#191C1B; --surface:#222725; --surface2:#1D2220;
+  --ink:#E8EDEA; --ink2:#A6B2AD; --ink3:#78847F;
+  --line:#313835;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:"PingFang SC","Microsoft YaHei","Hiragino Sans GB",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:14px;line-height:1.65;-webkit-font-smoothing:antialiased}
+button,input,textarea,select{font-family:inherit;font-size:inherit;color:inherit}
+button{cursor:pointer;border:none;background:none}
+a{color:var(--brand);text-decoration:none}
+.app{display:flex;min-height:100vh}
+
+/* 侧栏 */
+.side{width:236px;flex:0 0 236px;background:var(--surface);border-right:1px solid var(--line);height:100vh;position:sticky;top:0;display:flex;flex-direction:column;padding:26px 16px 18px}
+.brand{display:flex;align-items:center;gap:11px;padding:0 8px 24px;cursor:pointer;border-radius:10px;transition:.15s}
+.brand:hover{background:var(--surface2)}
+.avatar{width:40px;height:40px;flex:0 0 40px;border-radius:13px;background:linear-gradient(140deg,var(--brand2),var(--brand));color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;box-shadow:0 4px 12px rgba(0,0,0,.12);overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.avatar.emoji{font-size:21px;background:var(--soft);box-shadow:inset 0 0 0 1px var(--soft2)}
+.brand b{display:block;font-size:15px;letter-spacing:.3px}
+.brand small{display:block;color:var(--ink3);font-size:11px;margin-top:1px}
+.nav{display:flex;flex-direction:column;gap:3px}
+.nav button{display:flex;align-items:center;gap:11px;width:100%;padding:10px 12px;border-radius:10px;color:var(--ink2);font-size:13.5px;text-align:left;transition:.15s}
+.nav button:hover{background:var(--surface2);color:var(--ink)}
+.nav button.on{background:var(--soft);color:var(--brand);font-weight:600}
+.nav .ico{width:20px;text-align:center;font-size:15px}
+.nav .badge{margin-left:auto;background:var(--brand);color:#fff;border-radius:20px;font-size:10px;padding:1px 6px;font-weight:600}
+.side-foot{margin-top:auto;border-top:1px solid var(--line);padding-top:14px}
+.side-foot .lbl{font-size:11px;color:var(--ink3);padding:0 10px 8px;letter-spacing:.5px}
+.side-foot .row{display:flex;gap:6px;padding:0 6px}
+.side-foot button{flex:1;border:1px solid var(--line);border-radius:8px;padding:6px 4px;font-size:11.5px;color:var(--ink2);background:var(--surface)}
+.side-foot button:hover{border-color:var(--brand);color:var(--brand)}
+.copy{font-size:10.5px;color:var(--ink3);text-align:center;padding-top:12px}
+.langsel2{width:100%;margin-top:12px;border:1px solid var(--line);border-radius:9px;background:var(--surface);
+  font:inherit;font-size:12.5px;color:var(--ink);padding:8px 10px;cursor:pointer;outline:none}
+.langsel2:hover{border-color:var(--brand);color:var(--brand)}
+.langpick{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-top:6px}
+.langpick .lbtn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:14px 8px;border:1px solid var(--line);
+  border-radius:11px;background:var(--surface2);color:var(--ink);cursor:pointer;transition:.18s}
+.langpick .lbtn b{font-size:14px;font-weight:600}
+.langpick .lbtn small{font-size:11px;color:var(--ink3)}
+.langpick .lbtn:hover{border-color:var(--brand);color:var(--brand)}
+.langpick .lbtn.on{border-color:var(--brand);background:var(--soft);color:var(--brand);box-shadow:0 0 0 3px var(--ring)}
+.langpick .lbtn.on small{color:var(--brand)}
+/* 头像设置 */
+.avrow{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:4px}
+.avbig .avatar{box-shadow:0 6px 18px rgba(0,0,0,.13)}
+.avact{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.avpick{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.avitem{width:44px;height:44px;border:1px solid var(--line);border-radius:12px;background:var(--surface2);
+  font-size:21px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.16s;padding:0}
+.avitem:hover{border-color:var(--brand);transform:translateY(-1px)}
+.avitem.on{border-color:var(--brand);background:var(--soft);box-shadow:0 0 0 3px var(--ring)}
+
+/* 主区 */
+.main{flex:1;min-width:0;padding:26px 36px 70px;max-width:1240px;margin:0 auto;width:100%}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:26px;flex-wrap:wrap}
+.hello h1{font-size:23px;font-weight:650;letter-spacing:.5px}
+.hello p{color:var(--ink2);font-size:12.5px;margin-top:3px}
+.cd{display:flex;align-items:center;gap:9px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:9px 14px;box-shadow:var(--shadow)}
+.cd .dot{width:8px;height:8px;border-radius:50%;background:var(--red);box-shadow:0 0 0 4px rgba(0,0,0,.06);animation:pulse 1.8s infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 8px rgba(192,80,70,0)}}
+.cd small{display:block;color:var(--ink3);font-size:10.5px;line-height:1.3}
+.cd b{font-size:15px;font-variant-numeric:tabular-nums;color:var(--red);letter-spacing:.5px}
+.cd.done b{color:var(--ink3)}
+.grid{display:grid;gap:18px}
+.g2{grid-template-columns:1.15fr .85fr}
+.g2e{grid-template-columns:1fr 1fr}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px 22px;box-shadow:var(--shadow)}
+.card+.card{margin-top:18px}
+.card h2{font-size:15px;font-weight:650;display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.card h2 .tag{margin-left:auto}
+.sub{color:var(--ink3);font-size:11.5px;margin-bottom:16px}
+.tag{font-size:10.5px;font-weight:500;padding:2px 9px;border-radius:20px;background:var(--surface2);color:var(--ink2);border:1px solid var(--line)}
+.tag.hot{background:var(--soft);color:var(--brand);border-color:var(--soft2)}
+.tag.g{background:var(--soft);color:var(--green);border-color:var(--soft2)}
+.btn{display:inline-flex;align-items:center;gap:6px;background:var(--brand);color:#fff;border-radius:9px;padding:8px 15px;font-size:12.5px;font-weight:500;transition:.15s}
+.btn:hover{background:var(--brand-dark)}
+.btn.ghost{background:var(--surface2);color:var(--ink2);border:1px solid var(--line)}
+.btn.ghost:hover{background:var(--soft);color:var(--brand);border-color:var(--soft2)}
+.btn.sm{padding:5px 11px;font-size:11.5px;border-radius:7px}
+.btn.danger{background:#fff;color:var(--red);border:1px solid #F0D4D0}
+.btn.danger:hover{background:#FCEDEA}
+.inp,select,textarea{width:100%;border:1px solid var(--line);background:var(--surface2);border-radius:9px;padding:8px 11px;outline:none;transition:.15s;font-size:13px}
+.inp:focus,select:focus,textarea:focus{border-color:var(--brand);background:#fff;box-shadow:0 0 0 3px var(--ring)}
+textarea{resize:vertical;line-height:1.75}
+label.f{display:block;font-size:11.5px;color:var(--ink2);margin-bottom:5px}
+.form-row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.form-row>div{flex:1;min-width:120px}
+.form-row>div.w{flex:2.2}
+.muted{color:var(--ink3);font-size:11.5px}
+.empty{color:var(--ink3);font-size:12.5px;text-align:center;padding:22px 8px;border:1px dashed var(--line);border-radius:11px;background:var(--surface2)}
+
+/* 勾选清单 */
+.chk{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px dashed var(--line);cursor:pointer}
+.chk:last-child{border-bottom:none}
+.chk input{appearance:none;width:17px;height:17px;flex:0 0 17px;border:1.6px solid #D2DCD5;border-radius:5px;margin-top:2px;position:relative;background:#fff;cursor:pointer;transition:.15s}
+.chk input:checked{background:var(--green);border-color:var(--green)}
+.chk input:checked::after{content:"";position:absolute;left:5px;top:1.5px;width:4px;height:9px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(42deg)}
+.chk .txt{flex:1;font-size:13px}
+.chk .txt small{display:block;color:var(--ink3);font-size:11px;margin-top:1px}
+.chk input:checked+.txt{text-decoration:line-through;color:var(--ink3)}
+.chk .del{color:var(--ink3);font-size:15px;line-height:1;padding:2px 5px;border-radius:6px;opacity:0}
+.chk:hover .del{opacity:1}
+.chk .del:hover{color:var(--red);background:#FCEDEA}
+
+/* 进度环 */
+.hero{display:flex;align-items:center;gap:26px;flex-wrap:wrap}
+.ring{width:104px;height:104px;flex:0 0 104px;border-radius:50%;background:conic-gradient(var(--brand) var(--p),var(--line) 0);display:flex;align-items:center;justify-content:center;position:relative}
+.ring::before{content:"";position:absolute;inset:9px;background:var(--surface);border-radius:50%}
+.ring b{position:relative;font-size:22px;font-weight:650;color:var(--brand)}
+.hero-info{flex:1;min-width:220px}
+.hero-info h3{font-size:17px;margin-bottom:4px}
+.hero-info p{color:var(--ink2);font-size:12.5px;margin-bottom:12px}
+.bar{height:7px;border-radius:8px;background:var(--line);overflow:hidden;margin:10px 0 6px}
+.bar i{display:block;height:100%;border-radius:8px;background:linear-gradient(90deg,var(--brand),var(--brand2));transition:width .3s}
+
+/* 日程 / 任务 */
+.daygrp{margin-top:16px}
+.daygrp h4{font-size:11.5px;color:var(--brand);letter-spacing:.5px;margin-bottom:7px;display:flex;align-items:center;gap:7px}
+.daygrp h4::after{content:"";flex:1;height:1px;background:var(--line)}
+.daygrp.today h4{color:var(--ink);font-size:12.5px;font-weight:700}
+.daygrp.today h4::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--red,#C0531A)}
+.evt,.task{display:flex;align-items:center;gap:11px;padding:9px 11px;border:1px solid var(--line);border-radius:10px;margin-bottom:7px;background:var(--surface2)}
+.evt .tm{font-size:12px;color:var(--brand);font-weight:600;font-variant-numeric:tabular-nums;min-width:44px}
+.evt .ti,.task .ti{flex:1;font-size:13px}
+.evt .cat,.task .cat{font-size:10.5px;padding:1px 8px;border-radius:20px;background:#fff;border:1px solid var(--line);color:var(--ink2)}
+.evt.done .ti,.task.done .ti{text-decoration:line-through;color:var(--ink3)}
+.evt.urgent{border-color:#EFCBC6;background:#FDF3F2}
+.evt .x,.task .x{color:var(--ink3);font-size:16px;padding:0 4px;line-height:1}
+.evt .x:hover,.task .x:hover{color:var(--red)}
+.evt input[type=checkbox],.task input[type=checkbox]{accent-color:var(--green);width:15px;height:15px;cursor:pointer}
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0 4px}
+.chip{border:1px solid var(--line);background:var(--surface2);color:var(--ink2);border-radius:20px;padding:4px 13px;font-size:11.5px}
+.chip:hover{border-color:var(--brand)}
+.chip.on{background:var(--soft);color:var(--brand);border-color:var(--soft2);font-weight:600}
+
+/* 常用网站 */
+.qlinks{display:flex;flex-direction:column;gap:7px;margin-top:4px}
+.qlink{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px;padding:8px 11px;background:var(--surface2);transition:.15s}
+.qlink:hover{border-color:var(--brand);background:var(--soft);transform:translateX(2px)}
+.qico,.site-ico{width:28px;height:28px;flex:0 0 28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--brand)}
+.qlink .nm{flex:1;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qlink .arrow{color:var(--ink3);font-size:13px}
+.sites{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:14px}
+.site{border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--surface2);display:flex;flex-direction:column;gap:8px}
+.site .top{display:flex;align-items:center;justify-content:flex-start;flex-wrap:nowrap;gap:10px;margin:0}
+.site .top>div{flex:1;min-width:0}
+.site-ico{width:34px;height:34px;flex:0 0 34px;font-size:15px}
+.site .nm{font-size:13.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.site .ur{font-size:10.5px;color:var(--ink3);word-break:break-all;line-height:1.4}
+.site .nt{font-size:11.5px;color:var(--ink2);min-height:18px}
+.site .ops{display:flex;gap:6px;align-items:center;margin-top:2px;flex-wrap:wrap}
+.site .ops a{flex:1;text-align:center;background:var(--brand);color:#fff;border-radius:8px;padding:6px 10px;font-size:11.5px}
+.site .ops a:hover{background:var(--brand-dark)}
+.site .ops button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 9px;font-size:11px;color:var(--ink2)}
+.site .ops button:hover{color:var(--brand);border-color:var(--brand)}
+.site .ops button.rm:hover{color:var(--red);border-color:#EFCCC7}
+
+/* 优先级 */
+.pri{font-size:10.5px;font-weight:600;border-radius:20px;padding:1px 8px;white-space:nowrap;border:1px solid transparent}
+.pri.p0{background:#FCEBE9;color:#C4453A;border-color:#F3D3CF}
+.pri.p1{background:#FDF2E3;color:#B9701A;border-color:#F0DFC4}
+.pri.p2{background:var(--soft);color:var(--brand);border-color:var(--soft2)}
+.pri.p3{background:#F0F2F4;color:#7A8792;border-color:#E2E7EB}
+body.dark .pri.p0{background:#3A2523;border-color:#54322D}
+body.dark .pri.p1{background:#3A3020;border-color:#54452C}
+body.dark .pri.p3{background:#2A302E;border-color:#39413E}
+.minisel{border:1px solid var(--line);background:var(--surface);border-radius:7px;padding:3px 6px;font-size:11px;color:var(--ink2);cursor:pointer;max-width:92px}
+.minisel:hover{border-color:var(--brand)}
+.task.overdue{border-color:#EFCBC6;background:#FDF3F2}
+body.dark .task.overdue{background:#332524}
+
+/* 最该先做 */
+.ulist{display:flex;flex-direction:column;gap:7px}
+.uitem{display:flex;align-items:center;gap:10px;padding:10px 13px;border:1px solid var(--line);border-radius:11px;background:var(--surface2);cursor:pointer;transition:.15s;flex-wrap:wrap}
+.uitem:hover{border-color:var(--brand);background:var(--soft);transform:translateX(2px)}
+.uleft{display:flex;align-items:center;gap:9px;flex:1;min-width:160px}
+.ut{font-size:13.5px;font-weight:500}
+.uleft2{font-size:11.5px;color:var(--ink2);white-space:nowrap}
+.uleft2.over{color:#C4453A;font-weight:600}
+
+/* 记账 */
+.billsum{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:6px}
+/* 视图切换（月/年） */
+.seg{display:inline-flex;background:var(--line);border-radius:10px;padding:3px;gap:2px}
+.seg-b{border:none;background:none;padding:6px 18px;border-radius:8px;font-size:13px;color:var(--ink2);cursor:pointer;font-family:inherit;transition:.15s}
+.seg-b:hover{color:var(--brand)}
+.seg-b.on{background:var(--surface);color:var(--brand);font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+/* 时间切换 */
+.timenav{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tn-btn{width:34px;height:34px;border:1px solid var(--line);background:var(--surface2);border-radius:9px;font-size:17px;line-height:1;color:var(--ink2);cursor:pointer;transition:.15s}
+.tn-btn:hover{border-color:var(--brand);color:var(--brand);background:var(--soft)}
+.tn-cur{display:flex;align-items:center;gap:10px;padding:5px 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface2)}
+.tn-pick{border:none;background:none;font:600 15px/1.4 inherit;color:var(--ink);cursor:pointer;outline:none;padding:0;min-width:118px}
+.tn-pick::-webkit-calendar-picker-indicator{cursor:pointer;opacity:.55}
+.tn-sub{font-size:11.5px;color:var(--ink3);white-space:nowrap;border-left:1px solid var(--line);padding-left:10px}
+/* 年度柱状 */
+.ybar{display:grid;grid-template-columns:repeat(12,1fr);gap:6px;align-items:end;height:150px}
+.ybar-col{display:flex;flex-direction:column;align-items:center;gap:5px;border:none;background:none;cursor:pointer;padding:0;height:100%;justify-content:flex-end;font-family:inherit}
+.ybar-col:hover .ybars i{filter:brightness(1.12)}
+.ybars{display:flex;align-items:flex-end;gap:2px;height:100%;width:100%;justify-content:center}
+.ybars i{display:block;width:8px;border-radius:3px 3px 0 0;min-height:2px;transition:.2s}
+.ybars .bo{background:#D8806E}
+.ybars .bi{background:var(--brand2)}
+.ybar-col .ym{font-size:10.5px;color:var(--ink3)}
+.barlegend{display:flex;gap:16px;font-size:11.5px;color:var(--ink2);margin-top:10px;align-items:center;flex-wrap:wrap}
+.barlegend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:middle}
+.barlegend .bo{background:#D8806E}
+.barlegend .bi{background:var(--brand2)}
+.billmeta{font-size:11.5px;color:var(--ink3);margin-top:10px}
+/* 每月明细表 */
+.mtab{display:flex;flex-direction:column;margin-top:12px;font-size:12.5px}
+.mtab-h,.mtab-r{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;padding:8px 12px;text-align:right;align-items:center}
+.mtab-h{color:var(--ink3);font-size:11px;border-bottom:1px solid var(--line);padding-bottom:7px}
+.mtab-h span:first-child,.mtab-r span:first-child{text-align:left}
+.mtab-r{border:none;background:none;border-radius:8px;cursor:pointer;font-family:inherit;color:var(--ink);font-variant-numeric:tabular-nums;transition:.12s}
+.mtab-r:hover{background:var(--soft)}
+.mtab-r.empty{color:var(--ink3)}
+.mtab-r .out{color:#C4453A}
+.mtab-r .in{color:var(--brand)}
+body.dark .mtab-r .out{color:#E08A7E}
+/* 打印账单时只留内容 */
+@media print{
+  .side,.nav,.top,.impbox,.seg,.timenav,.toast,#toast{display:none!important}
+  body{background:#fff}
+  .main{padding:0}
+  .card{break-inside:avoid;box-shadow:none;border:1px solid #ddd}
+  .x,button{display:none!important}
+}
+.billsum>div{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--surface2)}
+.billsum small{display:block;font-size:11px;color:var(--ink3);margin-bottom:3px}
+.billsum b{font-size:19px;font-variant-numeric:tabular-nums;letter-spacing:.3px}
+.billsum .out{color:#C4453A}
+.billsum .in{color:var(--brand)}
+body.dark .billsum .out{color:#E08A7E}
+.catbars{display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.cbar{display:flex;align-items:center;gap:10px;font-size:12px}
+.cbar .cn{width:52px;color:var(--ink2);flex:0 0 52px}
+.cbar-bg{flex:1;height:9px;border-radius:8px;background:var(--line);overflow:hidden}
+.cbar-bg i{display:block;height:100%;border-radius:8px;background:linear-gradient(90deg,var(--brand),var(--brand2))}
+.cbar .cv{width:112px;text-align:right;color:var(--ink3);flex:0 0 112px;font-variant-numeric:tabular-nums}
+.bills{display:flex;flex-direction:column;gap:1px;margin-top:8px}
+.bill{display:flex;align-items:center;gap:11px;padding:9px 4px;border-bottom:1px dashed var(--line);font-size:12.5px}
+.bill:last-child{border-bottom:none}
+.bill .bd{color:var(--ink3);width:46px;flex:0 0 46px;font-variant-numeric:tabular-nums}
+.bill .bc{background:var(--surface2);border:1px solid var(--line);border-radius:20px;padding:1px 9px;font-size:11px;color:var(--ink2);flex:0 0 auto}
+.bill .bn{flex:1;color:var(--ink2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bill .ba{font-variant-numeric:tabular-nums;font-size:13.5px}
+.bill .ba.out{color:#C4453A}
+.bill .ba.in{color:var(--brand)}
+.bill .x{color:var(--ink3);font-size:15px;padding:0 5px;opacity:0}
+.bill:hover .x{opacity:1}
+.bill .x:hover{color:#C4453A}
+
+/* 内嵌导入框 */
+.impbox{margin-top:14px;padding-top:13px;border-top:1px dashed var(--line)}
+.imp-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12.5px}
+.imp-head b{font-weight:600;color:var(--ink)}
+.imp-head .btn{margin-left:auto}
+.imp-body{margin-top:11px}
+.imp-drop{border:1.5px dashed var(--line);border-radius:11px;padding:10px;transition:.15s;background:var(--surface2)}
+.imp-drop.dragover{border-color:var(--brand);background:var(--soft)}
+.imp-drop textarea{border:none;background:#fff}
+body.dark .imp-drop textarea{background:var(--surface)}
+.imp-imgrow{display:flex;align-items:center;gap:10px;margin-top:8px;flex-wrap:wrap}
+.imp-prev{position:relative;margin-top:9px;display:inline-block}
+.imp-prev img{max-height:150px;max-width:100%;border-radius:9px;border:1px solid var(--line);display:block}
+.imp-prev .x{position:absolute;top:-7px;right:-7px;background:var(--ink);color:#fff;border-radius:50%;width:22px;height:22px;font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center}
+.imp-res{margin-top:12px;border:1px solid var(--soft2);background:var(--soft);border-radius:11px;padding:11px}
+.imp-res-h{font-size:12px;font-weight:600;color:var(--brand);margin-bottom:9px}
+.imp-row{display:flex;gap:7px;margin-bottom:7px;flex-wrap:wrap;align-items:center}
+.imp-row .inp{flex:0 0 auto;width:auto;background:#fff}
+.imp-row input[type=date]{flex:0 0 132px}
+.imp-row input[type=time]{flex:0 0 92px}
+body.dark .imp-row .inp{background:var(--surface)}
+
+/* 主题 & 账户 */
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:10px;margin-top:4px}
+.sw{border:1.5px solid var(--line);border-radius:12px;padding:11px 12px;background:var(--surface2);display:flex;align-items:center;gap:5px;flex-wrap:wrap;transition:.15s}
+.sw:hover{border-color:var(--brand);transform:translateY(-1px)}
+.sw.on{border-color:var(--brand);background:var(--soft);box-shadow:0 0 0 2px var(--soft2)}
+.sw i{width:16px;height:16px;border-radius:5px;display:block;border:1px solid rgba(0,0,0,.06)}
+.sw span{width:100%;font-size:12px;color:var(--ink2);margin-top:3px;font-weight:500}
+.sw.on span{color:var(--brand);font-weight:600}
+.toggle{display:inline-flex;align-items:center;gap:9px;font-size:12.5px;color:var(--ink2);cursor:pointer;user-select:none}
+.toggle input{display:none}
+.toggle span{width:38px;height:21px;border-radius:20px;background:var(--line);position:relative;transition:.2s;flex:0 0 38px}
+.toggle span::after{content:"";position:absolute;left:2px;top:2px;width:17px;height:17px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.18)}
+.toggle input:checked+span{background:var(--brand)}
+.toggle input:checked+span::after{left:19px}
+.accs{display:flex;flex-wrap:wrap;gap:9px}
+.acc{display:flex;align-items:center;gap:9px;border:1.5px solid var(--line);border-radius:11px;padding:8px 14px 8px 9px;background:var(--surface2);font-size:13px;color:var(--ink2)}
+.acc:hover{border-color:var(--brand)}
+.acc.on{border-color:var(--brand);background:var(--soft);color:var(--brand);font-weight:600}
+.acc .av{width:26px;height:26px;border-radius:8px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600}
+.acc small{font-size:10px;background:var(--brand);color:#fff;border-radius:20px;padding:1px 7px}
+body.dark .sw i{border-color:rgba(255,255,255,.12)}
+body.dark .toggle span{background:#3A423F}
+body.dark .toggle span::after{background:#E8EDEA}
+
+/* 命名生成器 / 其它 */
+.namebox{background:var(--surface2);border:1px solid var(--line);border-radius:11px;padding:13px 14px;margin-top:12px}
+.nameline{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px dashed var(--line);font-size:12.5px;flex-wrap:wrap}
+.nameline:last-child{border-bottom:none}
+.nameline code{flex:1;min-width:200px;font-family:Consolas,"Courier New",monospace;background:#fff;border:1px solid var(--line);border-radius:6px;padding:5px 9px;color:var(--brand);word-break:break-all;font-size:12px}
+.note{background:var(--soft);border:1px solid var(--soft2);border-radius:9px;padding:10px 12px;font-size:11.5px;color:var(--ink2);margin-top:10px;line-height:1.6}
+.hwlist{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.hwlist button{border:1px solid var(--line);border-radius:9px;padding:7px 13px;font-size:12.5px;color:var(--ink2);background:var(--surface2)}
+.hwlist button.on{border-color:var(--brand);background:var(--soft);color:var(--brand);font-weight:600}
+.hwlist button:hover{border-color:var(--brand)}
+.kv{display:flex;gap:22px;flex-wrap:wrap;font-size:12px;color:var(--ink2);margin:10px 0 14px}
+.kv b{color:var(--ink);font-weight:600}
+#toast{position:fixed;right:24px;bottom:24px;background:var(--ink);color:#fff;padding:11px 18px;border-radius:10px;font-size:12.5px;box-shadow:0 8px 26px rgba(0,0,0,.18);opacity:0;transform:translateY(10px);pointer-events:none;transition:.25s;z-index:99}
+#toast.show{opacity:1;transform:translateY(0)}
+@media(max-width:900px){
+  .app{flex-direction:column}
+  .side{width:100%;flex:none;height:auto;position:static;padding:14px 16px;border-right:none;border-bottom:1px solid var(--line)}
+  .brand{padding-bottom:12px}.nav{flex-direction:row;overflow-x:auto;gap:5px}.nav button{white-space:nowrap;width:auto;padding:8px 12px}
+  .nav .badge{display:none}
+  .side-foot{margin-top:12px;padding-top:10px;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+  .side-foot .lbl,.side-foot .copy{display:none}
+  .side-foot .row{padding:0;flex:1 1 240px}
+  .langsel2{margin-top:0;flex:0 0 auto;width:auto;min-width:150px}
+  .main{padding:20px 16px 60px}.g2,.g2e{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand" id="brand">
+      <div class="avatar" id="avatar">玉</div>
+      <div style="min-width:0"><b id="userName">小玉的工作台</b><small id="userSub">点这里切换 / 新建账户</small></div>
+    </div>
+    <nav class="nav" id="nav">
+      <button data-tab="home" class="on"><span class="ico">🏠</span><span class="nl" data-k="总览">总览</span></button>
+      <button data-tab="hw"><span class="ico">📚</span><span class="nl" data-k="作业管家">作业管家</span><span class="badge" id="hwBadge"></span></button>
+      <button data-tab="task"><span class="ico">✅</span><span class="nl" data-k="我的任务">我的任务</span><span class="badge" id="taskBadge"></span></button>
+      <button data-tab="cal"><span class="ico">📅</span><span class="nl" data-k="日程安排">日程安排</span></button>
+      <button data-tab="site"><span class="ico">🌐</span><span class="nl" data-k="常用网站">常用网站</span></button>
+      <button data-tab="bill"><span class="ico">💰</span><span class="nl" data-k="记账">记账</span></button>
+      <button data-tab="me"><span class="ico">⚙️</span><span class="nl" data-k="设置">设置</span></button>
+    </nav>
+    <div class="side-foot">
+      <div class="lbl" id="dataLbl">数据（存在这台电脑上）</div>
+      <div class="row">
+        <button data-act="export" id="bExp">导出备份</button>
+        <button data-act="import" id="bImp">导入</button>
+        <button data-act="reset" id="bRst">重置</button>
+      </div>
+      <div class="copy" id="offlineTip">离线可用 · 关掉页面数据不丢</div>
+      <select id="langSel" class="langsel2" title="界面语言 / Language"></select>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="top">
+      <div class="hello"><h1 id="greet">你好，小玉 👋</h1><p id="dateLine"></p></div>
+      <div class="cd" id="cdBox"><span class="dot"></span><div><small>距作业截止</small><b id="cdText">--:--:--</b></div></div>
+    </div>
+    <div id="view"></div>
+  </main>
+</div>
+<div id="toast"></div>
+<input type="file" id="importFile" accept="application/json,.json" hidden>
+<script>
+/* ============ 多用户 & 主题 ============ */
+const AKEY='xy_desk_accounts';
+const PKEY='xy_desk_profile';
+const THEMES={
+ green :{name:'青竹',brand:'#2E6B58',brand2:'#3E8C6F',soft:'#E7F1EB',soft2:'#CDE2D4',dark:'#245546',ring:'rgba(46,107,88,.09)'},
+ plum  :{name:'烟紫',brand:'#6B4E8E',brand2:'#8D6BAF',soft:'#F0EAF7',soft2:'#DFD2EF',dark:'#563E73',ring:'rgba(107,78,142,.10)'},
+ rose  :{name:'胭脂',brand:'#B04A5F',brand2:'#CC6B7F',soft:'#FBEBEF',soft2:'#F3D4DC',dark:'#913C4E',ring:'rgba(176,74,95,.10)'},
+ sea   :{name:'海盐',brand:'#2A6A86',brand2:'#3E8DAE',soft:'#E6F1F6',soft2:'#CDE4EE',dark:'#21566E',ring:'rgba(42,106,134,.10)'},
+ tea   :{name:'茶褐',brand:'#8B6344',brand2:'#A87B57',soft:'#F5EDE5',soft2:'#E8D9CA',dark:'#704F36',ring:'rgba(139,99,68,.10)'},
+ ink   :{name:'墨黑',brand:'#3A403E',brand2:'#565E5B',soft:'#EDEFEE',soft2:'#DBDFDD',dark:'#2B302E',ring:'rgba(58,64,62,.10)'},
+ coral :{name:'珊瑚',brand:'#C05A44',brand2:'#DC7960',soft:'#FBEDE8',soft2:'#F2D5CB',dark:'#9C4734',ring:'rgba(192,90,68,.10)'},
+ indigo:{name:'靛蓝',brand:'#3D4E8C',brand2:'#5C6FB0',soft:'#EBEEF8',soft2:'#D8DEF0',dark:'#31406F',ring:'rgba(61,78,140,.10)'}
+};
+
+function themeKeys(){return Object.keys(THEMES)}
+function applyTheme(profile){
+  const th=(profile.theme==='custom'&&profile.colors)?profile.colors:(THEMES[profile.theme]||THEMES.green), r=document.documentElement.style;
+  r.setProperty('--brand',th.brand);r.setProperty('--brand2',th.brand2);r.setProperty('--soft',th.soft);
+  r.setProperty('--soft2',th.soft2);r.setProperty('--brand-dark',th.dark);r.setProperty('--ring',th.ring);
+  r.setProperty('--green',th.brand);
+  document.body.classList.toggle('dark',!!profile.dark);
+}
+function rawProf(){
+  try{const r=JSON.parse(localStorage.getItem(PKEY)||'null');if(r)return r}catch(e){}
+  return null;
+}
+function prof(){
+  const r=rawProf()||{};
+  const themes=(r.themes&&typeof r.themes==='object')?JSON.parse(JSON.stringify(r.themes)):{};
+  const user=r.user||null;
+  const mine=themes[user||'_guest']||{};
+  return {user,theme:mine.theme||'green',dark:!!mine.dark,themes,colors:mine.colors||null,lang:mine.lang||'zh',avatar:mine.avatar||null};
+}
+function saveProf(p){
+  const cur=rawProf()||{};
+  const themes=(cur.themes&&typeof cur.themes==='object')?JSON.parse(JSON.stringify(cur.themes)):{};
+  const u=p.user||'_guest';
+  themes[u]={theme:p.theme||'green',dark:!!p.dark,colors:p.colors||null,lang:p.lang||'zh',avatar:p.avatar||null};
+  const out={user:p.user||null,themes};
+  try{localStorage.setItem(PKEY,JSON.stringify(out))}catch(e){}
+}
+function accounts(){try{return JSON.parse(localStorage.getItem(AKEY)||'[]')}catch(e){return []}}
+function saveAccounts(a){try{localStorage.setItem(AKEY,JSON.stringify(a))}catch(e){}}
+let P=prof();
+applyTheme(P);
+
+const KEY='xy_desk_v2';
+const pad=n=>String(n).padStart(2,'0');
+const ymd=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const today=()=>ymd(new Date());
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+function hash(s){let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))>>>0;return h}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2200)}
+function copy(text){
+  const done=()=>toast('已复制，可以直接粘贴了');
+  const fb=()=>{const a=document.createElement('textarea');a.value=text;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();try{document.execCommand('copy');done()}catch(e){toast('复制失败，请手动选中文字')}document.body.removeChild(a)};
+  if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(text).then(done).catch(fb);else fb();
+}
+function normUrl(u){
+  u=String(u||'').trim();if(!u)return '';
+  if(!/^https?:\/\//i.test(u))u='https://'+u;
+  try{const x=new URL(u);return /^https?:$/.test(x.protocol)?x.href:''}catch(e){return ''}
+}
+const ICOBG=['#E7F1EB','#E9F0F8','#F7F0E6','#F1EAF6','#E8F3F3'];
+function ico(name,i){const ch=String(name||'?').trim().charAt(0)||'?';return {ch,bg:ICOBG[(hash(ch)+i)%ICOBG.length]}}
+
+/* ============ 多语言 ============ */
+const LANGS=[
+ {k:'zh',n:'中文',sub:'简体中文',html:'zh-CN'},
+ {k:'en',n:'English',sub:'英语',html:'en'},
+ {k:'ja',n:'日本語',sub:'日语',html:'ja'},
+ {k:'ko',n:'한국어',sub:'韩语',html:'ko'},
+ {k:'es',n:'Español',sub:'西班牙语',html:'es'},
+ {k:'fr',n:'Français',sub:'法语',html:'fr'}
+];
+
+
+/* 中文为源语言，其余为「中文串 → 译文」对照；查不到就原样显示中文 */
+const I18N={"en":{"总览":"Overview","作业管家":"Assignments","我的任务":"Tasks","日程安排":"Schedule","常用网站":"Bookmarks","记账":"Budget","设置":"Settings","点这里切换 / 新建账户":"Click to switch / add account","数据（存在这台电脑上）":"Data (stored on this computer)","导出备份":"Export","导入":"Import","重置":"Reset","离线可用 · 关掉页面数据不丢":"Works offline · data stays after closing","距作业截止":"Time left","月账单":"Month","年账单":"Year","按月":"By month","按年":"By year","支出":"Spent","收入":"Income","结余":"Balance","全年支出":"Year spending","全年收入":"Year income","净结余":"Net balance","月度小结":"Monthly summary","年度小结":"Yearly summary","流水":"Transactions","每月明细":"Monthly detail","记一笔":"Add entry","花了多少、进了多少，随手记下就好":"Log what you spend and earn, right here","收 / 支":"Type","金额（元）":"Amount (CNY)","分类":"Category","日期":"Date","备注（可不填）":"Note (optional)","记下":"Save","月份":"Month","上一月":"Prev month","下一月":"Next month","上一年":"Prev year","下一年":"Next year","回到本月":"This month","回到今年":"This year","吃饭":"Food","交通":"Transport","学习":"Study","购物":"Shopping","娱乐":"Fun","住宿":"Housing","人情":"Gifts","其他":"Other","生活费":"Allowance","兼职":"Part-time","红包":"Red packet","奖学金":"Scholarship","导出":"Export","打印 / 存 PDF":"Print / PDF","明细":"Details","备份":"Backup","这个月还没记账":"Nothing logged this month","还没有流水，上面记第一笔吧":"No entries yet. Add the first one above.","从近到远，点 × 可以删掉记错的":"Newest first. Tap × to remove a wrong entry.","共":"Total","笔":"entries","平均每天支出":"Average daily spending","月均支出":"Monthly average spending","平均每月":"Monthly average","点某个月可以跳进月账单":"Click a month to jump to its bill","哪个月花得多，一眼就看出来":"See at a glance which month costs most","还没有账单可以导出":"No bill to export yet","没有记录":"No records","已导出":"Exported","已复制，可以直接粘贴了":"Copied — paste it anywhere","复制失败，请手动选中文字":"Copy failed — select the text manually","图片识别":"Image recognition","已配置":"Configured","未配置":"Not configured","主题色":"Theme color","每人各自保存":"Saved per account","账户":"Account","深色模式":"Dark mode","服务商":"Provider","模型":"Model","保存":"Save","接口地址（一般不用改，走代理时用）":"Endpoint (usually unchanged; use with a proxy)","把工作台发给别人":"Share this workspace","语言":"Language","界面语言":"Interface language","🔥 最该先做的事":"🔥 Do this first","按轻重缓急自动排":"Auto-sorted by priority","紧急的先上，快到期的往前排；点一下直接跳过去":"Urgent first, soonest due on top. Click to jump.","没有待办了，安心休息 🍃":"All clear — take a break 🍃","重要":"Important","普通":"Normal","不着急":"Low","十万火急":"Critical","紧急程度":"Priority","改紧急程度":"Change priority","优先级":"Priority","还剩":"","天":" days","今天到期":"Due today","已过期":"Overdue","没有期限":"No due date","今天还剩":"Today, ","📅 今天的日程":"📅 Today","今天没有安排，安心做事 🍃":"Nothing scheduled — enjoy the quiet 🍃","全部日程":"All events","看日程":"View schedule","去处理作业 →":"Handle assignments →","去记一笔 →":"Add a record →","💰 这个月的账":"💰 This month","本月支出":"Spent","本月收入":"Earned","收支一目了然，点进去记一笔":"Your month at a glance","离交作业最近的一件事，先盯着它":"The nearest deadline — keep an eye on it","截止：":"Due:","课程：":"Course:","🎯 当前作业":"🎯 Current assignment","＋ 新作业":"＋ New","内容 / 作品名":"Title / work name","学号":"Student No.","姓名":"Name","老师要求「学号 姓名 内容 创意作品/设计说明」，填一次自动出两个名字":"Fill once — both filenames are generated automatically","🏷️ 文件名生成器":"🏷️ Filename generator","生成文件名":"Generate","复制":"Copy","复制全文（粘到答题框）":"Copy all (paste into the answer box)","✅ 要交的东西":"✅ What to submit","一个作业一个清单，勾完就不会漏东西":"One checklist per assignment — nothing gets missed","🔍 提交前自查":"🔍 Pre-submit check","点「提交」之前，从上到下对一遍":"Go through it before you hit submit","完成度：":"Progress:","分值：":"Points:","✍️ 创作说明草稿":"✍️ Write-up draft","自动保存":"Auto-saved","边写边存，切走也不会丢":"Saved as you type","恢复模板":"Restore template","看例子":"See example","按课程要求起好了框架，把括号里的内容换成自己的就行":"Framework ready — just replace the bracketed parts","创意作品":"Creative work","设计说明":"Design notes","课程":"Course","作业":"Assignment","新建作业":"New assignment","删除当前":"Delete current","添加":"Add","作业建好了，去勾清单":"Assignment created — go tick the list","新作业加好了":"New assignment added","已恢复模板":"Template restored","生成好了，记得按实际文件改扩展名":"Generated — remember to set the right extension","用模板覆盖现在写的内容？":"Overwrite what you wrote with the template?","已复制":"Copied","任务清单":"Task list","按「紧急程度 + 离到期远近」自动排序，最该做的在最上面":"Sorted by priority and due date — most important on top","要做什么":"What to do","添加任务":"Add task","哪天前做完（可不填）":"Due date (optional)","全部任务 →":"All tasks →","想到什么就加，并按轻重缓急排好序；做完打勾":"Add anything, sorted by priority; tick when done","进行中":"In progress","已完成":"Done","这里还没有任务，上面加一条吧":"No tasks yet — add one above","还没有待办，下面加一条 ✍️":"Nothing pending — add one below ✍️","任务加好了":"Task added","📌 随手记":"📌 Quick notes","选题、灵感、要问老师的话，先丢这儿":"Ideas, topics, questions for your teacher — drop them here","边写边存，只有你自己能看到":"Saved as you type, visible only to you","清空":"Clear","添加日程":"Add event","快速加一条今天的事":"Quick add for today","时间":"Time","还没写日期就当...":"","还没写日期就当 今天":"","按时间排好了，过期的也会留在下面，方便回头看":"Sorted by time; past items stay below for reference","还没有日程，上面加一条吧":"No events yet — add one above","日程加好了":"Event added","加到今天了":"Added to today","🌐 常用网站":"🌐 Bookmarks","把自己喜欢的网站放进来，点一下直接打开":"Keep your favourite sites one click away","网站名称":"Site name","网址":"URL","管理我的网站 →":"Manage bookmarks →","我的收藏":"My sites","点卡片上的「打开」直接跳转":"Click “Open” to jump straight there","打开 ↗":"Open ↗","编辑":"Edit","删除":"Delete","网站加好了，点「打开」就能跳过去":"Site added — click “Open” to visit","给网站起个名字吧":"Give the site a name","网址看起来不对，检查一下再试":"That URL looks wrong — check and try again","删掉这个网站？":"Delete this site?","还没有网站，去「常用网站」加几个吧":"No sites yet — add some in Bookmarks","这一类还没有网站，用上面的表单加一个吧":"Nothing in this category — add one with the form above","取消":"Cancel","改好了":"Updated","📥 直接粘进来 / 传张图":"📥 Paste or drop an image","识别文字":"Parse text","🔍 识别图片":"🔍 Read image","📷 选图片":"📷 Choose image","展开":"Expand","收起":"Collapse","清空图片":"Clear image","也可以把截图直接拖到上面的框里，或在那里 Ctrl+V 粘贴":"You can also drag a screenshot into the box, or press Ctrl+V there","没认出内容，一段一行再试试":"Nothing recognised — try one item per line","认出":"Found","图片识出":"Read from image","图片准备好了，点「识别图片」":"Image ready — click “Read image”","图片放好了，点「识别图片」":"Image added — click “Read image”","图片粘好了，点「识别图片」":"Image pasted — click “Read image”","先选一张图片":"Pick an image first","例子填好了，点「识别文字」看看":"Example filled in — click “Parse text”","还没填 API Key，去「设置 → 图片识别」填一下":"No API Key yet — add one in Settings → Image recognition","一条一份":"","待确认":"","⚙️ 设置":"⚙️ Settings","🎨 主题色":"🎨 Theme color","挑一个顺眼的，改完立刻生效，只影响你自己的账户":"Pick one — applies instantly, only to your account","自定义主色":"Custom color","用这个色":"Use this color","想用别的颜色？点下面自己调一个（浏览器自带的取色器，选完直接生效）。":"Want another color? Pick one below with the built-in color picker.","晚上看屏幕更舒服，配色会自动跟着主题走":"Easier on the eyes at night","👤 账户":"👤 Accounts","每个账户的作业、任务、日程、网站都是分开的，互不打扰":"Each account has its own assignments, tasks, schedule and sites","新建账户":"New account","创建并切换":"Create and switch","重命名当前账户":"Rename","删除当前账户":"Delete account","当前":"Current","还没有其他账户":"No other accounts yet","账户「":"Account “","已删除":"Deleted","切换到":"Switched to","🤖 图片识别":"🤖 Image recognition","填一次就好，之后在日程 / 任务 / 作业里都能直接传截图识别":"Set once — then you can drop screenshots in Schedule / Tasks / Assignments","API Key（只存在这台电脑上）":"API Key (stored only on this computer)","传图时图片会发给你选的服务商":"Images are sent to the provider you choose","，除此之外不会传给别处。没有 Key 也不影响别的功能——粘文字照样能用。":". Nothing else is shared. Without a key, pasting text still works.","🎁 把工作台发给别人":"🎁 Share this workspace","这个文件本身就是完整程序，发给谁都能直接用":"This file is the whole app — anyone can open it","导出备份（JSON）":"Export backup (JSON)","备份已下载":"Backup downloaded","点这里换颜色 / 加账户":"Click for colors / accounts","删除这笔记录？":"Delete this record?","金额要大于 0":"Amount must be greater than 0","已导出 ":"Exported ","还没认出":"","导入了 ":"Imported ","导入成功":"Imported successfully","这个文件读不了，换一个备份试试":"Cannot read this file — try another backup","本地存储不可用，改动只在本次有效":"Local storage unavailable — changes apply to this session only","清空所有勾选和记录，回到初始状态？建议先导出备份。":"Reset everything back to the start? Export a backup first.","已重置":"Reset done","换成「":"Switched to “","自定义颜色已生效":"Custom color applied","删除账户「":"Delete account “","优先级改成「":"Priority set to “","删掉这笔记录？":"Delete this record?","项待办":" pending","项":"items","条":"","交付物":"Deliverables","清单":"Checklist","账单":"Bill","月":"mo","日":"d","年":"yr","每周":"Weekly","随手加，做完打个勾":"Add as you go; tick when done","加一件要做的事…":"Add something to do…","例如：导出成片、检查命名…":"e.g. Export the final cut, check the naming…","例如：找参考片、导出成片、问老师命名规范…":"e.g. Find clips, export the cut, ask about naming…","例如：剪第三期、交作业、和妈妈视频…":"e.g. Edit episode 3, submit homework, call mum…","例如：学习通":"e.g. Learning platform","想做点什么？":"What do you need to do?","要做的事":"To do","直接粘贴网址，不带 https:// 也行":"Paste the URL; https:// optional","这个网站用来干嘛":"What is this site for","把喜欢的网站加进来，点「打开」会在新标签页跳转":"Add your favourite sites — “Open” loads them in a new tab","只支持 http / https；网址、名称、备注都只存在这台电脑上，不会上传到任何地方。":"Only http / https. URLs, names and notes stay on this computer and are never uploaded.","输入名字，比如室友、同组同学":"e.g. roommate, classmate","全部":"All","支持：2026-11-15 / 11月15日 / 15号 / 明天 / 周三 / 18:30 / 下午3点 / 三点半。图片识别需要先在「⚙️ 设置 → 图片识别」里填一次 API Key。":"Supports: 2026-11-15 / Nov 15 / 15th / tomorrow / Wed / 18:30 / 3pm. Image recognition needs an API Key in ⚙️ Settings → Image recognition.","没写日期就当 今天":"No date means today","一串任务整段粘进来，或传张截图":"Paste a whole list of tasks, or drop a screenshot","从学习通、微信、课程表里整段复制过来":"Copy a block from your course app, chat or timetable","把作业要求整段粘进来 / 传截图":"Paste the assignment brief, or drop a screenshot","例：":"Example:","小提示：选「收入」时分类会自动换成生活费 / 兼职那一组。":"Tip: choosing “Income” switches the categories to allowance / part-time etc.","留空用默认":"Leave blank for default","留空用服务商默认地址":"Leave blank for provider default","支持通义千问 qwen-vl（阿里云百炼）、智谱 GLM-4V、以及任何兼容 OpenAI 格式的多模态接口。":"Works with Qwen-VL (Alibaba Bailian), Zhipu GLM-4V, and any OpenAI-compatible multimodal API.","通义千问 qwen-vl":"Qwen-VL (Alibaba)","智谱 GLM-4V":"Zhipu GLM-4V","OpenAI 兼容接口":"OpenAI-compatible","自定义":"Custom","青竹":"Bamboo","烟紫":"Lilac","胭脂":"Rose","海盐":"Sea salt","茶褐":"Tea","墨黑":"Ink","珊瑚":"Coral","靛蓝":"Indigo","数据只在本浏览器里，换电脑或换浏览器都看不到。想带走/分享，用左侧「导出备份」，别人在他的浏览器里点「导入」就能用同一套内容。":"Data lives in this browser only. To move or share it, use “Export” on the left; others can click “Import” to get the same content.","把这个 HTML 文件直接发给同学（微信、QQ 都行），他双击打开就能用。他可以在「⚙️ 设置」里挑自己的颜色、建自己的账户，数据存在他自己的电脑上，不会看到你的东西。":"Send this HTML file to anyone (WeChat, QQ — whatever). They just double-click to use it, pick their own colors and accounts, and their data stays on their own computer.","流水 ":"Transactions","账单 ":"Bill","添加网站":"Add site","素材":"Materials","工具":"Tools","生活":"Life","课程、作业、生活都放这儿，做完打个勾":"Courses, assignments, life — all here; tick when done","想到什么写什么…":"Write whatever comes to mind…","没写日期就当":"No date means","导出 2026-11月 明细（Excel）":"Export 2026-11 (Excel)"," 个":"","交付物 ":"Deliverables "," 已完成 · 清单共 ":" done · checklist "," 笔 · 平均每天支出 ":" entries · avg daily ","提交截止":"Deadline","明天":"Tomorrow","共 ":"Total "," 小时":" hours","已过期 ":"Overdue "," 天":" days","截至":"Until","小玉的工作台":"Workspace","的工作台":" — Workspace","顺手加，做完打个勾":"Add as you go, tick when done","已截止":"Closed","全天":"All day","截止":"Due","紧急程度：":"Priority: ","改截止时间":"Reschedule","要交的东西":"What to turn in","提交前自查":"Check before submit","文件名生成器":"Filename builder","保存修改":"Save","正在修改这个网站，改完点「保存修改」":"Editing this site — click Save when done","网址只支持 http / https；网址、名称、备注都只存在这台电脑上，不会上传到任何地方。":"Only http / https links. Everything stays on this computer — nothing is uploaded.","明细（Excel）":"detail (Excel)"," 月度小结":" monthly summary"," 年度小结":" yearly summary"," 项":" items"," 项待办":" pending"," 笔":"entries"," 笔 ":" entries","分":"pts","日程":"Schedule","今天":"Today","之后":"","选一个看得惯的语言，整页立刻换掉，只影响你自己的账户":"Pick the language you like — the whole page switches instantly. Only affects your account.","后天":"Day after tomorrow","待定日期":"No date yet","距":"Until ","任务":"Task","最近没有到期的事":"Nothing due soon"},"ja":{"总览":"概要","作业管家":"課題管理","我的任务":"タスク","日程安排":"予定","常用网站":"お気に入り","记账":"家計簿","设置":"設定","点这里切换 / 新建账户":"クリックで切替 / 追加","数据（存在这台电脑上）":"データ（この端末に保存）","导出备份":"バックアップ","导入":"読み込み","重置":"初期化","离线可用 · 关掉页面数据不丢":"オフライン可・閉じてもデータは残ります","距作业截止":"締切まで","月账单":"月次","年账单":"年次","按月":"月別","按年":"年別","支出":"支出","收入":"収入","结余":"残高","全年支出":"年間支出","全年收入":"年間収入","净结余":"純残高","月度小结":"月のまとめ","年度小结":"年間まとめ","流水":"入出金履歴","每月明细":"月別内訳","记一笔":"記録する","花了多少、进了多少，随手记下就好":"使った分・入った分をここに記録","收 / 支":"種別","金额（元）":"金額（元）","分类":"分類","日期":"日付","备注（可不填）":"メモ（任意）","记下":"保存","月份":"月","上一月":"前の月","下一月":"次の月","上一年":"前の年","下一年":"次の年","回到本月":"今月に戻る","回到今年":"今年に戻る","吃饭":"食事","交通":"交通","学习":"学習","购物":"買い物","娱乐":"娯楽","住宿":"住居","人情":"お付き合い","其他":"その他","生活费":"生活費","兼职":"アルバイト","红包":"お年玉","奖学金":"奨学金","导出":"書き出し","打印 / 存 PDF":"印刷 / PDF","明细":"内訳","备份":"バックアップ","这个月还没记账":"今月はまだ記録がありません","还没有流水，上面记第一笔吧":"履歴がありません。上で最初の1件を記録しましょう。","从近到远，点 × 可以删掉记错的":"新しい順。× で誤った記録を削除。","共":"計","笔":"件","平均每天支出":"1日あたりの平均支出","月均支出":"月平均支出","平均每月":"月平均","点某个月可以跳进月账单":"月をクリックすると月の家計簿へ","哪个月花得多，一眼就看出来":"どの月が多いかひと目で分かります","还没有账单可以导出":"書き出せる記録がまだありません","没有记录":"記録なし","已导出":"書き出しました","已复制，可以直接粘贴了":"コピーしました。どこにでも貼れます","复制失败，请手动选中文字":"コピー失敗。手動で選択してください","图片识别":"画像認識","已配置":"設定済み","未配置":"未設定","主题色":"テーマカラー","每人各自保存":"アカウントごとに保存","账户":"アカウント","深色模式":"ダークモード","服务商":"事業者","模型":"モデル","保存":"保存","接口地址（一般不用改，走代理时用）":"エンドポイント（通常は変更不要・プロキシ利用時）","把工作台发给别人":"このワークスペースを共有","语言":"言語","界面语言":"表示言語","🔥 最该先做的事":"🔥 先にやること","按轻重缓急自动排":"優先度で自動整列","紧急的先上，快到期的往前排；点一下直接跳过去":"急ぎ優先・締切が近い順。クリックで移動","没有待办了，安心休息 🍃":"やることは全部終わりました 🍃","重要":"重要","普通":"普通","不着急":"ゆっくり","十万火急":"最優先","紧急程度":"優先度","改紧急程度":"優先度を変更","优先级":"優先度","还剩":"あと","天":"日","今天到期":"今日が締切","已过期":"期限切れ","没有期限":"期限なし","今天还剩":"今日あと","📅 今天的日程":"📅 今日の予定","今天没有安排，安心做事 🍃":"今日は予定なし。ゆっくりどうぞ 🍃","全部日程":"すべての予定","看日程":"予定を見る","去处理作业 →":"課題を進める →","去记一笔 →":"記録する →","💰 这个月的账":"💰 今月の家計","本月支出":"今月の支出","本月收入":"今月の収入","收支一目了然，点进去记一笔":"収支がひと目で分かります","离交作业最近的一件事，先盯着它":"提出が一番近いもの。まずはこれ","截止：":"締切：","课程：":"科目：","🎯 当前作业":"🎯 現在の課題","＋ 新作业":"＋ 新規","内容 / 作品名":"内容 / 作品名","学号":"学籍番号","姓名":"氏名","老师要求「学号 姓名 内容 创意作品/设计说明」，填一次自动出两个名字":"1回入力すればファイル名が2つ自動で作られます","🏷️ 文件名生成器":"🏷️ ファイル名生成","生成文件名":"生成","复制":"コピー","复制全文（粘到答题框）":"全文コピー（解答欄へ貼付）","✅ 要交的东西":"✅ 提出物","一个作业一个清单，勾完就不会漏东西":"課題ごとにチェックリスト。漏れなし","🔍 提交前自查":"🔍 提出前チェック","点「提交」之前，从上到下对一遍":"提出前に上から順に確認","完成度：":"進捗：","分值：":"配点：","✍️ 创作说明草稿":"✍️ 制作説明の下書き","自动保存":"自動保存","边写边存，切走也不会丢":"入力しながら保存","恢复模板":"テンプレートに戻す","看例子":"例を見る","按课程要求起好了框架，把括号里的内容换成自己的就行":"枠は用意済み。括弧の中を自分の内容に","创意作品":"創作作品","设计说明":"設計説明","课程":"科目","作业":"課題","新建作业":"課題を作成","删除当前":"削除","添加":"追加","作业建好了，去勾清单":"課題を作成しました","新作业加好了":"課題を追加しました","已恢复模板":"テンプレートを復元","生成好了，记得按实际文件改扩展名":"生成しました。拡張子を確認してください","用模板覆盖现在写的内容？":"入力内容をテンプレートで上書きしますか？","已复制":"コピーしました","任务清单":"タスク一覧","按「紧急程度 + 离到期远近」自动排序，最该做的在最上面":"優先度と締切で自動整列。一番上から","要做什么":"やること","添加任务":"タスク追加","哪天前做完（可不填）":"締切（任意）","全部任务 →":"すべてのタスク →","想到什么就加，并按轻重缓急排好序；做完打勾":"思いついたら追加。終わったらチェック","进行中":"進行中","已完成":"完了","这里还没有任务，上面加一条吧":"タスクはまだありません。上で追加しましょう","还没有待办，下面加一条 ✍️":"やることはありません。下で追加 ✍️","任务加好了":"タスクを追加しました","📌 随手记":"📌 メモ","选题、灵感、要问老师的话，先丢这儿":"テーマ、アイデア、先生への質問はここへ","边写边存，只有你自己能看到":"自動保存。自分だけが見られます","清空":"クリア","添加日程":"予定を追加","快速加一条今天的事":"今日の予定をすばやく追加","时间":"時刻","还没写日期就当...":"日付なしは","还没写日期就当 今天":"日付なしは今日","按时间排好了，过期的也会留在下面，方便回头看":"時刻順。過ぎた予定も下に残ります","还没有日程，上面加一条吧":"予定はまだありません","日程加好了":"予定を追加しました","加到今天了":"今日に追加しました","🌐 常用网站":"🌐 ブックマーク","把自己喜欢的网站放进来，点一下直接打开":"よく使うサイトを1クリックで","网站名称":"サイト名","网址":"URL","管理我的网站 →":"サイトを管理 →","我的收藏":"お気に入り","点卡片上的「打开」直接跳转":"「開く」で直接移動","打开 ↗":"開く ↗","编辑":"編集","删除":"削除","网站加好了，点「打开」就能跳过去":"追加しました。「開く」で移動できます","给网站起个名字吧":"サイト名を入力してください","网址看起来不对，检查一下再试":"URLが正しくないようです","删掉这个网站？":"このサイトを削除しますか？","还没有网站，去「常用网站」加几个吧":"サイトはまだありません","这一类还没有网站，用上面的表单加一个吧":"この分類はまだ空です","取消":"キャンセル","改好了":"更新しました","📥 直接粘进来 / 传张图":"📥 貼り付け / 画像","识别文字":"テキスト解析","🔍 识别图片":"🔍 画像を解析","📷 选图片":"📷 画像を選ぶ","展开":"開く","收起":"閉じる","清空图片":"画像を消す","也可以把截图直接拖到上面的框里，或在那里 Ctrl+V 粘贴":"スクリーンショットを枠にドラッグ、または Ctrl+V で貼り付け","没认出内容，一段一行再试试":"認識できません。1行1項目で試してください","认出":"認識","图片识出":"画像から認識","图片准备好了，点「识别图片」":"画像の準備完了。「画像を解析」を押してください","图片放好了，点「识别图片」":"画像を追加しました","图片粘好了，点「识别图片」":"画像を貼り付けました","先选一张图片":"まず画像を選んでください","例子填好了，点「识别文字」看看":"例を入力しました。「テキスト解析」を押してください","还没填 API Key，去「设置 → 图片识别」填一下":"API Key が未設定です（設定 → 画像認識）","一条一份":"","待确认":"","⚙️ 设置":"⚙️ 設定","🎨 主题色":"🎨 テーマカラー","挑一个顺眼的，改完立刻生效，只影响你自己的账户":"選ぶとすぐ反映。自分のアカウントだけに適用","自定义主色":"カスタム色","用这个色":"この色を使う","想用别的颜色？点下面自己调一个（浏览器自带的取色器，选完直接生效）。":"別の色は下のカラーピッカーでどうぞ。","晚上看屏幕更舒服，配色会自动跟着主题走":"夜でも目にやさしい","👤 账户":"👤 アカウント","每个账户的作业、任务、日程、网站都是分开的，互不打扰":"アカウントごとに課題・タスク・予定・サイトが分かれます","新建账户":"アカウント作成","创建并切换":"作成して切替","重命名当前账户":"名前を変更","删除当前账户":"アカウント削除","当前":"現在","还没有其他账户":"他のアカウントはまだありません","账户「":"アカウント「","已删除":"削除しました","切换到":"切替：","🤖 图片识别":"🤖 画像認識","填一次就好，之后在日程 / 任务 / 作业里都能直接传截图识别":"一度設定すれば、予定・タスク・課題で画像を使えます","API Key（只存在这台电脑上）":"API Key（このPCにのみ保存）","传图时图片会发给你选的服务商":"画像は選択した事業者に送信されます","，除此之外不会传给别处。没有 Key 也不影响别的功能——粘文字照样能用。":"。それ以外には送信しません。Key がなくてもテキスト貼付は使えます。","🎁 把工作台发给别人":"🎁 このワークスペースを共有","这个文件本身就是完整程序，发给谁都能直接用":"このファイルだけで動作します","导出备份（JSON）":"バックアップ書き出し（JSON）","备份已下载":"バックアップを保存しました","点这里换颜色 / 加账户":"色の変更 / アカウント追加","删除这笔记录？":"この記録を削除しますか？","金额要大于 0":"金額は0より大きくしてください","已导出 ":"書き出しました ","还没认出":"","导入了 ":"読み込みました ","导入成功":"読み込み成功","这个文件读不了，换一个备份试试":"このファイルは読めません。別のバックアップを","本地存储不可用，改动只在本次有效":"ローカル保存が使えません。変更は今回のみ有効","清空所有勾选和记录，回到初始状态？建议先导出备份。":"すべて初期化しますか？先にバックアップを推奨","已重置":"初期化しました","换成「":"変更：","自定义颜色已生效":"カスタム色を適用しました","删除账户「":"アカウント削除「","优先级改成「":"優先度を変更：","删掉这笔记录？":"この記録を削除しますか？","项待办":"件","项":"件","条":"","交付物":"提出物","清单":"チェックリスト","账单":"家計簿","月":"月","日":"日","年":"年","每周":"毎週","随手加，做完打个勾":"思いついたら追加。終わったらチェック","加一件要做的事…":"やることを追加…","例如：导出成片、检查命名…":"例：書き出し、命名チェック…","例如：找参考片、导出成片、问老师命名规范…":"例：参考映像を探す、書き出し、命名について質問…","例如：剪第三期、交作业、和妈妈视频…":"例：第3回を編集、課題提出、家族とビデオ通話…","例如：学习通":"例：学習アプリ","想做点什么？":"何をしますか？","要做的事":"やること","直接粘贴网址，不带 https:// 也行":"URLを貼り付け（https:// 不要）","这个网站用来干嘛":"このサイトの用途","把喜欢的网站加进来，点「打开」会在新标签页跳转":"「開く」で新しいタブで開きます","只支持 http / https；网址、名称、备注都只存在这台电脑上，不会上传到任何地方。":"http / https のみ。データはこのPCにのみ保存され、アップロードされません。","输入名字，比如室友、同组同学":"名前を入力（例：ルームメイト）","全部":"すべて","支持：2026-11-15 / 11月15日 / 15号 / 明天 / 周三 / 18:30 / 下午3点 / 三点半。图片识别需要先在「⚙️ 设置 → 图片识别」里填一次 API Key。":"対応：2026-11-15 / 11月15日 / 15日 / 明日 / 水曜 / 18:30 / 午後3時。画像認識は設定 → 画像認識で API Key が必要です。","没写日期就当 今天":"日付なしは今日","没写日期就当":"日付なしは","一串任务整段粘进来，或传张截图":"タスクをまとめて貼り付け、またはスクショ","从学习通、微信、课程表里整段复制过来":"学習アプリ・チャット・時間割からまとめてコピー","把作业要求整段粘进来 / 传截图":"課題の指示を貼り付け / スクショ","例：":"例：","小提示：选「收入」时分类会自动换成生活费 / 兼职那一组。":"ヒント：「収入」を選ぶと分類が生活費などに変わります。","留空用默认":"空欄で既定値","留空用服务商默认地址":"空欄で事業者の既定URL","支持通义千问 qwen-vl（阿里云百炼）、智谱 GLM-4V、以及任何兼容 OpenAI 格式的多模态接口。":"Qwen-VL・GLM-4V・OpenAI 互換のマルチモーダル API に対応。","通义千问 qwen-vl":"Qwen-VL（Alibaba）","智谱 GLM-4V":"Zhipu GLM-4V","OpenAI 兼容接口":"OpenAI 互換","自定义":"カスタム","青竹":"青竹","烟紫":"藤紫","胭脂":"紅","海盐":"海塩","茶褐":"茶褐","墨黑":"墨","珊瑚":"珊瑚","靛蓝":"藍","数据只在本浏览器里，换电脑或换浏览器都看不到。想带走/分享，用左侧「导出备份」，别人在他的浏览器里点「导入」就能用同一套内容。":"データはこのブラウザ内のみ。移動・共有は左の「バックアップ」で。","把这个 HTML 文件直接发给同学（微信、QQ 都行），他双击打开就能用。他可以在「⚙️ 设置」里挑自己的颜色、建自己的账户，数据存在他自己的电脑上，不会看到你的东西。":"この HTML ファイルをそのまま送れば、ダブルクリックで使えます。色やアカウントは各自で設定でき、データは相手のPCに保存されます。","流水 ":"明細","账单 ":"家計簿 ","添加网站":"サイト追加","素材":"素材","工具":"ツール","生活":"生活","课程、作业、生活都放这儿，做完打个勾":"科目・課題・生活をここに。終わったらチェック","想到什么写什么…":"思いついたことをどうぞ…","导出 2026-11月 明细（Excel）":"書き出し（Excel）"," 个":"","交付物 ":"提出物 "," 已完成 · 清单共 ":" 完了 · チェックリスト "," 笔 · 平均每天支出 ":" 件 · 1日平均支出 ","提交截止":"提出締切","明天":"明日","共 ":"計 "," 小时":" 時間","已过期 ":"期限切れ "," 天":" 日","截至":"「","小玉的工作台":"ワークスペース","的工作台":"のワークスペース","顺手加，做完打个勾":"思い出したら追加、終わったらチェック","已截止":"締切済み","全天":"終日","截止":"締切","紧急程度：":"優先度：","改截止时间":"締切を変更","要交的东西":"提出するもの","提交前自查":"提出前チェック","文件名生成器":"ファイル名生成","保存修改":"保存","正在修改这个网站，改完点「保存修改」":"このサイトを編集中。「保存」で確定","网址只支持 http / https；网址、名称、备注都只存在这台电脑上，不会上传到任何地方。":"URL は http / https のみ。URL・名称・メモはこの端末だけに保存され、送信されません。","明细（Excel）":"明細（Excel）"," 月度小结":" の月まとめ"," 年度小结":" の年まとめ"," 项":"件"," 项待办":"件"," 笔":"件"," 笔 ":"件 ","分":"点","日程":"予定","今天":"今日","之后":"以降","选一个看得惯的语言，整页立刻换掉，只影响你自己的账户":"見やすい言語を選ぶと、ページ全体がすぐ切り替わります（自分のアカウントだけ）。","后天":"明後日","待定日期":"日付未定","距":"まで ","任务":"タスク","最近没有到期的事":"期限が近いものはありません"},"ko":{"总览":"개요","作业管家":"과제 관리","我的任务":"할 일","日程安排":"일정","常用网站":"즐겨찾기","记账":"가계부","设置":"설정","点这里切换 / 新建账户":"클릭하여 전환 / 추가","数据（存在这台电脑上）":"데이터(이 컴퓨터에 저장)","导出备份":"백업 내보내기","导入":"가져오기","重置":"초기화","离线可用 · 关掉页面数据不丢":"오프라인 사용 가능 · 닫아도 데이터 유지","距作业截止":"마감까지","月账单":"월간","年账单":"연간","按月":"월별","按年":"연도별","支出":"지출","收入":"수입","结余":"잔액","全年支出":"연간 지출","全年收入":"연간 수입","净结余":"순 잔액","月度小结":"월 요약","年度小结":"연간 요약","流水":"거래 내역","每月明细":"월별 내역","记一笔":"기록하기","花了多少、进了多少，随手记下就好":"쓴 돈과 번 돈을 여기에 기록하세요","收 / 支":"구분","金额（元）":"금액(위안)","分类":"분류","日期":"날짜","备注（可不填）":"메모(선택)","记下":"저장","月份":"월","上一月":"이전 달","下一月":"다음 달","上一年":"이전 해","下一年":"다음 해","回到本月":"이번 달로","回到今年":"올해로","吃饭":"식비","交通":"교통","学习":"학습","购物":"쇼핑","娱乐":"여가","住宿":"주거","人情":"경조사","其他":"기타","生活费":"용돈","兼职":"아르바이트","红包":"세뱃돈","奖学金":"장학금","导出":"내보내기","打印 / 存 PDF":"인쇄 / PDF","明细":"상세","备份":"백업","这个月还没记账":"이번 달 기록이 없습니다","还没有流水，上面记第一笔吧":"내역이 없습니다. 위에서 첫 기록을 남겨 보세요.","从近到远，点 × 可以删掉记错的":"최신순. × 를 누르면 잘못된 기록을 삭제합니다.","共":"총","笔":"건","平均每天支出":"하루 평균 지출","月均支出":"월 평균 지출","平均每月":"월 평균","点某个月可以跳进月账单":"월을 누르면 해당 월 가계부로 이동","哪个月花得多，一眼就看出来":"어느 달에 많이 썼는지 한눈에","还没有账单可以导出":"내보낼 기록이 없습니다","没有记录":"기록 없음","已导出":"내보냈습니다","已复制，可以直接粘贴了":"복사했습니다. 어디든 붙여넣으세요","复制失败，请手动选中文字":"복사 실패. 직접 선택하세요","图片识别":"이미지 인식","已配置":"설정됨","未配置":"미설정","主题色":"테마 색","每人各自保存":"계정별 저장","账户":"계정","深色模式":"다크 모드","服务商":"제공사","模型":"모델","保存":"저장","接口地址（一般不用改，走代理时用）":"엔드포인트(보통 수정 불필요 · 프록시 시 사용)","把工作台发给别人":"이 작업 공간 공유","语言":"언어","界面语言":"인터페이스 언어","🔥 最该先做的事":"🔥 먼저 할 일","按轻重缓急自动排":"우선순위로 자동 정렬","紧急的先上，快到期的往前排；点一下直接跳过去":"급한 것 우선, 마감 임박 순. 클릭하면 이동","没有待办了，安心休息 🍃":"할 일을 모두 마쳤습니다 🍃","重要":"중요","普通":"보통","不着急":"여유","十万火急":"매우 급함","紧急程度":"우선순위","改紧急程度":"우선순위 변경","优先级":"우선순위","还剩":"남음","天":"일","今天到期":"오늘 마감","已过期":"기한 지남","没有期限":"기한 없음","今天还剩":"오늘 남은 시간","📅 今天的日程":"📅 오늘 일정","今天没有安排，安心做事 🍃":"오늘 일정이 없습니다 🍃","全部日程":"전체 일정","看日程":"일정 보기","去处理作业 →":"과제 처리 →","去记一笔 →":"기록하기 →","💰 这个月的账":"💰 이번 달 가계부","本月支出":"이번 달 지출","本月收入":"이번 달 수입","收支一目了然，点进去记一笔":"수입과 지출을 한눈에","离交作业最近的一件事，先盯着它":"가장 가까운 마감입니다","截止：":"마감：","课程：":"과목：","🎯 当前作业":"🎯 현재 과제","＋ 新作业":"＋ 새 과제","内容 / 作品名":"내용 / 작품명","学号":"학번","姓名":"이름","老师要求「学号 姓名 内容 创意作品/设计说明」，填一次自动出两个名字":"한 번 입력하면 파일명 두 개가 자동 생성됩니다","🏷️ 文件名生成器":"🏷️ 파일명 생성","生成文件名":"생성","复制":"복사","复制全文（粘到答题框）":"전체 복사(답안란에 붙여넣기)","✅ 要交的东西":"✅ 제출물","一个作业一个清单，勾完就不会漏东西":"과제마다 체크리스트","🔍 提交前自查":"🔍 제출 전 점검","点「提交」之前，从上到下对一遍":"제출 전 위에서 아래로 확인","完成度：":"진행률：","分值：":"배점：","✍️ 创作说明草稿":"✍️ 제작 설명 초안","自动保存":"자동 저장","边写边存，切走也不会丢":"입력과 동시에 저장","恢复模板":"템플릿 복원","看例子":"예시 보기","按课程要求起好了框架，把括号里的内容换成自己的就行":"틀은 준비됨. 괄호 안만 바꾸면 됩니다","创意作品":"창작물","设计说明":"설계 설명","课程":"과목","作业":"과제","新建作业":"과제 만들기","删除当前":"삭제","添加":"추가","作业建好了，去勾清单":"과제가 생성되었습니다","新作业加好了":"새 과제를 추가했습니다","已恢复模板":"템플릿을 복원했습니다","生成好了，记得按实际文件改扩展名":"생성됨. 확장자를 확인하세요","用模板覆盖现在写的内容？":"작성한 내용을 템플릿으로 덮어쓸까요?","已复制":"복사됨","任务清单":"할 일 목록","按「紧急程度 + 离到期远近」自动排序，最该做的在最上面":"우선순위와 마감으로 자동 정렬","要做什么":"할 일","添加任务":"할 일 추가","哪天前做完（可不填）":"마감(선택)","全部任务 →":"전체 할 일 →","想到什么就加，并按轻重缓急排好序；做完打勾":"생각날 때 추가, 완료하면 체크","进行中":"진행 중","已完成":"완료","这里还没有任务，上面加一条吧":"할 일이 없습니다. 위에서 추가하세요","还没有待办，下面加一条 ✍️":"할 일이 없습니다 ✍️","任务加好了":"할 일 추가됨","📌 随手记":"📌 메모","选题、灵感、要问老师的话，先丢这儿":"주제, 아이디어, 질문을 여기에","边写边存，只有你自己能看到":"자동 저장. 본인만 볼 수 있습니다","清空":"비우기","添加日程":"일정 추가","快速加一条今天的事":"오늘 일정 빠르게 추가","时间":"시간","还没写日期就当...":"날짜 없으면","还没写日期就当 今天":"날짜 없으면 오늘","按时间排好了，过期的也会留在下面，方便回头看":"시간순 정렬. 지난 일정도 아래에 남습니다","还没有日程，上面加一条吧":"일정이 없습니다","日程加好了":"일정 추가됨","加到今天了":"오늘로 추가됨","🌐 常用网站":"🌐 북마크","把自己喜欢的网站放进来，点一下直接打开":"자주 쓰는 사이트를 한 번에","网站名称":"사이트 이름","网址":"주소","管理我的网站 →":"사이트 관리 →","我的收藏":"내 즐겨찾기","点卡片上的「打开」直接跳转":"「열기」로 바로 이동","打开 ↗":"열기 ↗","编辑":"편집","删除":"삭제","网站加好了，点「打开」就能跳过去":"추가됨. 「열기」로 이동하세요","给网站起个名字吧":"사이트 이름을 입력하세요","网址看起来不对，检查一下再试":"주소가 잘못된 것 같습니다","删掉这个网站？":"이 사이트를 삭제할까요?","还没有网站，去「常用网站」加几个吧":"사이트가 없습니다","这一类还没有网站，用上面的表单加一个吧":"이 분류는 비어 있습니다","取消":"취소","改好了":"수정됨","📥 直接粘进来 / 传张图":"📥 붙여넣기 / 이미지","识别文字":"텍스트 분석","🔍 识别图片":"🔍 이미지 인식","📷 选图片":"📷 이미지 선택","展开":"펼치기","收起":"접기","清空图片":"이미지 지우기","也可以把截图直接拖到上面的框里，或在那里 Ctrl+V 粘贴":"스크린샷을 드래그하거나 Ctrl+V 로 붙여넣으세요","没认出内容，一段一行再试试":"인식하지 못했습니다. 한 줄에 하나씩","认出":"인식","图片识出":"이미지에서 인식","图片准备好了，点「识别图片」":"이미지 준비됨. 「이미지 인식」을 누르세요","图片放好了，点「识别图片」":"이미지를 추가했습니다","图片粘好了，点「识别图片」":"이미지를 붙여넣었습니다","先选一张图片":"먼저 이미지를 선택하세요","例子填好了，点「识别文字」看看":"예시를 채웠습니다. 「텍스트 분석」을 누르세요","还没填 API Key，去「设置 → 图片识别」填一下":"API Key가 없습니다(설정 → 이미지 인식)","一条一份":"","待确认":"","⚙️ 设置":"⚙️ 설정","🎨 主题色":"🎨 테마 색","挑一个顺眼的，改完立刻生效，只影响你自己的账户":"선택 즉시 적용. 내 계정에만 적용됩니다","自定义主色":"사용자 색","用这个色":"이 색 사용","想用别的颜色？点下面自己调一个（浏览器自带的取色器，选完直接生效）。":"다른 색은 아래 색상 선택기로 고르세요.","晚上看屏幕更舒服，配色会自动跟着主题走":"밤에도 눈이 편안합니다","👤 账户":"👤 계정","每个账户的作业、任务、日程、网站都是分开的，互不打扰":"계정마다 과제·할 일·일정·사이트가 분리됩니다","新建账户":"계정 만들기","创建并切换":"만들고 전환","重命名当前账户":"이름 변경","删除当前账户":"계정 삭제","当前":"현재","还没有其他账户":"다른 계정이 없습니다","账户「":"계정 「","已删除":"삭제됨","切换到":"전환:","🤖 图片识别":"🤖 이미지 인식","填一次就好，之后在日程 / 任务 / 作业里都能直接传截图识别":"한 번 설정하면 일정·할 일·과제에서 이미지를 쓸 수 있습니다","API Key（只存在这台电脑上）":"API Key(이 컴퓨터에만 저장)","传图时图片会发给你选的服务商":"이미지는 선택한 제공업체로 전송됩니다","，除此之外不会传给别处。没有 Key 也不影响别的功能——粘文字照样能用。":"。그 외에는 전송되지 않습니다. Key가 없어도 텍스트 붙여넣기는 됩니다.","🎁 把工作台发给别人":"🎁 이 워크스페이스 공유","这个文件本身就是完整程序，发给谁都能直接用":"이 파일 하나로 동작합니다","导出备份（JSON）":"백업 내보내기(JSON)","备份已下载":"백업을 저장했습니다","点这里换颜色 / 加账户":"색 변경 / 계정 추가","删除这笔记录？":"이 기록을 삭제할까요?","金额要大于 0":"금액은 0보다 커야 합니다","已导出 ":"내보냄 ","还没认出":"","导入了 ":"가져옴 ","导入成功":"가져오기 성공","这个文件读不了，换一个备份试试":"이 파일을 읽을 수 없습니다","本地存储不可用，改动只在本次有效":"로컬 저장 불가. 변경은 이번만 적용됩니다","清空所有勾选和记录，回到初始状态？建议先导出备份。":"모두 초기화할까요? 먼저 백업을 권장합니다.","已重置":"초기화됨","换成「":"변경:","自定义颜色已生效":"사용자 색 적용됨","删除账户「":"계정 삭제 「","优先级改成「":"우선순위 변경:","删掉这笔记录？":"이 기록을 삭제할까요?","项待办":"건","项":"개","条":"","交付物":"제출물","清单":"체크리스트","账单":"가계부","月":"월","日":"일","年":"년","每周":"매주","随手加，做完打个勾":"생각날 때 추가하고 완료하면 체크","加一件要做的事…":"할 일 추가…","例如：导出成片、检查命名…":"예: 영상 내보내기, 파일명 확인…","例如：找参考片、导出成片、问老师命名规范…":"예: 참고 영상 찾기, 내보내기, 파일명 질문…","例如：剪第三期、交作业、和妈妈视频…":"예: 3회 편집, 과제 제출, 가족 영상통화…","例如：学习通":"예: 학습 앱","想做点什么？":"무엇을 할까요?","要做的事":"할 일","直接粘贴网址，不带 https:// 也行":"주소를 붙여넣으세요(https:// 생략 가능)","这个网站用来干嘛":"이 사이트 용도","把喜欢的网站加进来，点「打开」会在新标签页跳转":"「열기」를 누르면 새 탭에서 열립니다","只支持 http / https；网址、名称、备注都只存在这台电脑上，不会上传到任何地方。":"http / https 만 지원. 데이터는 이 컴퓨터에만 저장됩니다.","输入名字，比如室友、同组同学":"이름 입력(예: 룸메이트)","全部":"전체","支持：2026-11-15 / 11月15日 / 15号 / 明天 / 周三 / 18:30 / 下午3点 / 三点半。图片识别需要先在「⚙️ 设置 → 图片识别」里填一次 API Key。":"지원: 2026-11-15 / 11월15일 / 15일 / 내일 / 수요일 / 18:30 / 오후3시. 이미지 인식은 설정 → 이미지 인식에서 API Key가 필요합니다.","没写日期就当 今天":"날짜 없으면 오늘","没写日期就当":"날짜 없으면","一串任务整段粘进来，或传张截图":"할 일을 붙여넣거나 스크린샷","从学习通、微信、课程表里整段复制过来":"학습 앱·채팅·시간표에서 복사","把作业要求整段粘进来 / 传截图":"과제 요구사항 붙여넣기 / 스크린샷","例：":"예:","小提示：选「收入」时分类会自动换成生活费 / 兼职那一组。":"팁: 「수입」을 고르면 분류가 생활비 등으로 바뀝니다.","留空用默认":"비우면 기본값","留空用服务商默认地址":"비우면 제공업체 기본 주소","支持通义千问 qwen-vl（阿里云百炼）、智谱 GLM-4V、以及任何兼容 OpenAI 格式的多模态接口。":"Qwen-VL, GLM-4V, OpenAI 호환 멀티모달 API 지원.","通义千问 qwen-vl":"Qwen-VL(Alibaba)","智谱 GLM-4V":"Zhipu GLM-4V","OpenAI 兼容接口":"OpenAI 호환","自定义":"사용자 지정","青竹":"청죽","烟紫":"연보라","胭脂":"연지","海盐":"바다소금","茶褐":"차갈","墨黑":"먹색","珊瑚":"산호","靛蓝":"남색","数据只在本浏览器里，换电脑或换浏览器都看不到。想带走/分享，用左侧「导出备份」，别人在他的浏览器里点「导入」就能用同一套内容。":"데이터는 이 브라우저에만 있습니다. 이동·공유는 왼쪽 「백업」을 쓰세요.","把这个 HTML 文件直接发给同学（微信、QQ 都行），他双击打开就能用。他可以在「⚙️ 设置」里挑自己的颜色、建自己的账户，数据存在他自己的电脑上，不会看到你的东西。":"이 HTML 파일을 그대로 보내면 더블클릭으로 사용할 수 있습니다. 색과 계정은 각자 설정하고 데이터는 상대 컴퓨터에 저장됩니다.","流水 ":"거래 내역","账单 ":"가계부 ","添加网站":"사이트 추가","素材":"소재","工具":"도구","生活":"생활","课程、作业、生活都放这儿，做完打个勾":"과목·과제·생활을 여기에. 완료하면 체크","想到什么写什么…":"생각나는 대로 적으세요…","导出 2026-11月 明细（Excel）":"내보내기(Excel)"," 个":"개","交付物 ":"제출물 "," 已完成 · 清单共 ":" 완료 · 체크리스트 "," 笔 · 平均每天支出 ":" 건 · 일평균 지출 ","提交截止":"제출 마감","明天":"내일","共 ":"총 "," 小时":" 시간","已过期 ":"기한 지남 "," 天":" 일","截至":"「","小玉的工作台":"워크스페이스","的工作台":"의 워크스페이스","顺手加，做完打个勾":"생각날 때 추가하고 완료하면 체크","已截止":"마감됨","全天":"종일","截止":"마감","紧急程度：":"우선순위: ","改截止时间":"마감 변경","要交的东西":"제출물","提交前自查":"제출 전 점검","文件名生成器":"파일명 생성","保存修改":"저장","正在修改这个网站，改完点「保存修改」":"이 사이트 수정 중. 「저장」을 누르세요","网址只支持 http / https；网址、名称、备注都只存在这台电脑上，不会上传到任何地方。":"URL은 http / https만 지원합니다. 모든 내용은 이 컴퓨터에만 저장됩니다.","明细（Excel）":"내역 (Excel)"," 月度小结":" 월 요약"," 年度小结":" 연 요약"," 项":"건"," 项待办":"건"," 笔":"건"," 笔 ":"건 ","分":"점","日程":"일정","今天":"오늘","之后":"이후","选一个看得惯的语言，整页立刻换掉，只影响你自己的账户":"보기 편한 언어를 고르면 페이지 전체가 바로 바뀝니다. 내 계정에만 적용됩니다.","后天":"모레","待定日期":"날짜 미정","距":"까지 ","任务":"할 일","最近没有到期的事":"곧 마감되는 일이 없습니다"},"es":{"总览":"Resumen","作业管家":"Deberes","我的任务":"Tareas","日程安排":"Agenda","常用网站":"Favoritos","记账":"Presupuesto","设置":"Ajustes","点这里切换 / 新建账户":"Clic para cambiar / añadir","数据（存在这台电脑上）":"Datos (en este ordenador)","导出备份":"Exportar copia","导入":"Importar","重置":"Restablecer","离线可用 · 关掉页面数据不丢":"Sin conexión · los datos se guardan","距作业截止":"Tiempo restante","月账单":"Mes","年账单":"Año","按月":"Por mes","按年":"Por año","支出":"Gastos","收入":"Ingresos","结余":"Balance","全年支出":"Gasto anual","全年收入":"Ingreso anual","净结余":"Balance neto","月度小结":"Resumen mensual","年度小结":"Resumen anual","流水":"Movimientos","每月明细":"Detalle mensual","记一笔":"Añadir","花了多少、进了多少，随手记下就好":"Anota lo que gastas y lo que ingresas","收 / 支":"Tipo","金额（元）":"Importe (CNY)","分类":"Categoría","日期":"Fecha","备注（可不填）":"Nota (opcional)","记下":"Guardar","月份":"Mes","上一月":"Mes anterior","下一月":"Mes siguiente","上一年":"Año anterior","下一年":"Año siguiente","回到本月":"Este mes","回到今年":"Este año","吃饭":"Comida","交通":"Transporte","学习":"Estudios","购物":"Compras","娱乐":"Ocio","住宿":"Vivienda","人情":"Regalos","其他":"Otros","生活费":"Paga","兼职":"Trabajo parcial","红包":"Sobre rojo","奖学金":"Beca","导出":"Exportar","打印 / 存 PDF":"Imprimir / PDF","明细":"Detalles","备份":"Copia","这个月还没记账":"Aún no hay nada este mes","还没有流水，上面记第一笔吧":"Sin movimientos. Añade el primero arriba.","从近到远，点 × 可以删掉记错的":"Del más reciente al más antiguo. Pulsa × para borrar.","共":"Total","笔":"registros","平均每天支出":"Gasto diario medio","月均支出":"Gasto mensual medio","平均每月":"Media mensual","点某个月可以跳进月账单":"Pulsa un mes para ir a su cuenta","哪个月花得多，一眼就看出来":"Mira de un vistazo qué mes cuesta más","还没有账单可以导出":"Aún no hay nada que exportar","没有记录":"Sin registros","已导出":"Exportado","已复制，可以直接粘贴了":"Copiado: pégalo donde quieras","复制失败，请手动选中文字":"No se pudo copiar. Selecciona el texto.","图片识别":"Reconocimiento de imágenes","已配置":"Configurado","未配置":"Sin configurar","主题色":"Color del tema","每人各自保存":"Guardado por cuenta","账户":"Cuenta","深色模式":"Modo oscuro","服务商":"Proveedor","模型":"Modelo","保存":"Guardar","接口地址（一般不用改，走代理时用）":"Endpoint (normalmente no se cambia)","把工作台发给别人":"Compartir este espacio","语言":"Idioma","界面语言":"Idioma de la interfaz","🔥 最该先做的事":"🔥 Empieza por esto","按轻重缓急自动排":"Ordenado por prioridad","紧急的先上，快到期的往前排；点一下直接跳过去":"Urgente primero y lo que vence antes arriba. Clic para ir.","没有待办了，安心休息 🍃":"Todo hecho, descansa 🍃","重要":"Importante","普通":"Normal","不着急":"Sin prisa","十万火急":"Urgentísimo","紧急程度":"Prioridad","改紧急程度":"Cambiar prioridad","优先级":"Prioridad","还剩":"Quedan","天":"días","今天到期":"Vence hoy","已过期":"Vencido","没有期限":"Sin fecha","今天还剩":"Hoy quedan","📅 今天的日程":"📅 Hoy","今天没有安排，安心做事 🍃":"Nada programado hoy 🍃","全部日程":"Toda la agenda","看日程":"Ver agenda","去处理作业 →":"Ir a los deberes →","去记一笔 →":"Añadir un registro →","💰 这个月的账":"💰 Este mes","本月支出":"Gastado","本月收入":"Ingresado","收支一目了然，点进去记一笔":"Tu mes de un vistazo","离交作业最近的一件事，先盯着它":"Lo que vence antes","截止：":"Entrega:","课程：":"Curso:","🎯 当前作业":"🎯 Deber actual","＋ 新作业":"＋ Nuevo","内容 / 作品名":"Título / obra","学号":"N.º de alumno","姓名":"Nombre","老师要求「学号 姓名 内容 创意作品/设计说明」，填一次自动出两个名字":"Rellena una vez y se generan los dos nombres de archivo","🏷️ 文件名生成器":"🏷️ Generador de nombres","生成文件名":"Generar","复制":"Copiar","复制全文（粘到答题框）":"Copiar todo (pegar en la respuesta)","✅ 要交的东西":"✅ Qué entregar","一个作业一个清单，勾完就不会漏东西":"Una lista por deber, nada se queda fuera","🔍 提交前自查":"🔍 Revisión final","点「提交」之前，从上到下对一遍":"Repásalo antes de enviar","完成度：":"Progreso:","分值：":"Puntos:","✍️ 创作说明草稿":"✍️ Borrador de la memoria","自动保存":"Guardado automático","边写边存，切走也不会丢":"Se guarda mientras escribes","恢复模板":"Restaurar plantilla","看例子":"Ver ejemplo","按课程要求起好了框架，把括号里的内容换成自己的就行":"Estructura lista, solo cambia lo que está entre corchetes","创意作品":"Obra creativa","设计说明":"Memoria de diseño","课程":"Curso","作业":"Deber","新建作业":"Nuevo deber","删除当前":"Borrar","添加":"Añadir","作业建好了，去勾清单":"Deber creado","新作业加好了":"Deber añadido","已恢复模板":"Plantilla restaurada","生成好了，记得按实际文件改扩展名":"Generado, ajusta la extensión","用模板覆盖现在写的内容？":"¿Sobrescribir lo escrito con la plantilla?","已复制":"Copiado","任务清单":"Lista de tareas","按「紧急程度 + 离到期远近」自动排序，最该做的在最上面":"Ordenado por prioridad y vencimiento","要做什么":"Qué hacer","添加任务":"Añadir tarea","哪天前做完（可不填）":"Fecha límite (opcional)","全部任务 →":"Todas las tareas →","想到什么就加，并按轻重缓急排好序；做完打勾":"Añade lo que surja, marca al terminar","进行中":"En curso","已完成":"Hecho","这里还没有任务，上面加一条吧":"Aún no hay tareas","还没有待办，下面加一条 ✍️":"Nada pendiente ✍️","任务加好了":"Tarea añadida","📌 随手记":"📌 Notas","选题、灵感、要问老师的话，先丢这儿":"Temas, ideas, dudas para el profe","边写边存，只有你自己能看到":"Se guarda solo, solo tú lo ves","清空":"Vaciar","添加日程":"Añadir evento","快速加一条今天的事":"Añadir algo para hoy","时间":"Hora","还没写日期就当...":"Sin fecha =","还没写日期就当 今天":"Sin fecha = hoy","按时间排好了，过期的也会留在下面，方便回头看":"Ordenado por hora; lo pasado queda abajo","还没有日程，上面加一条吧":"Aún no hay eventos","日程加好了":"Evento añadido","加到今天了":"Añadido a hoy","🌐 常用网站":"🌐 Marcadores","把自己喜欢的网站放进来，点一下直接打开":"Tus sitios favoritos a un clic","网站名称":"Nombre del sitio","网址":"URL","管理我的网站 →":"Gestionar sitios →","我的收藏":"Mis sitios","点卡片上的「打开」直接跳转":"Pulsa «Abrir» para ir","打开 ↗":"Abrir ↗","编辑":"Editar","删除":"Borrar","网站加好了，点「打开」就能跳过去":"Sitio añadido","给网站起个名字吧":"Ponle un nombre al sitio","网址看起来不对，检查一下再试":"Esa URL no parece correcta","删掉这个网站？":"¿Borrar este sitio?","还没有网站，去「常用网站」加几个吧":"Aún no hay sitios","这一类还没有网站，用上面的表单加一个吧":"Nada en esta categoría","取消":"Cancelar","改好了":"Actualizado","📥 直接粘进来 / 传张图":"📥 Pegar o subir imagen","识别文字":"Analizar texto","🔍 识别图片":"🔍 Leer imagen","📷 选图片":"📷 Elegir imagen","展开":"Desplegar","收起":"Plegar","清空图片":"Quitar imagen","也可以把截图直接拖到上面的框里，或在那里 Ctrl+V 粘贴":"También puedes arrastrar la captura o pegar con Ctrl+V","没认出内容，一段一行再试试":"No se reconoció nada. Un elemento por línea","认出":"Detectado","图片识出":"Leído de la imagen","图片准备好了，点「识别图片」":"Imagen lista: pulsa «Leer imagen»","图片放好了，点「识别图片」":"Imagen añadida","图片粘好了，点「识别图片」":"Imagen pegada","先选一张图片":"Elige una imagen primero","例子填好了，点「识别文字」看看":"Ejemplo cargado: pulsa «Analizar texto»","还没填 API Key，去「设置 → 图片识别」填一下":"Falta la API Key (Ajustes → Reconocimiento)","一条一份":"","待确认":"","⚙️ 设置":"⚙️ Ajustes","🎨 主题色":"🎨 Color del tema","挑一个顺眼的，改完立刻生效，只影响你自己的账户":"Se aplica al instante, solo a tu cuenta","自定义主色":"Color personalizado","用这个色":"Usar este color","想用别的颜色？点下面自己调一个（浏览器自带的取色器，选完直接生效）。":"¿Otro color? Elígelo abajo con el selector.","晚上看屏幕更舒服，配色会自动跟着主题走":"Más cómodo de noche","👤 账户":"👤 Cuentas","每个账户的作业、任务、日程、网站都是分开的，互不打扰":"Cada cuenta tiene sus deberes, tareas, agenda y sitios","新建账户":"Nueva cuenta","创建并切换":"Crear y cambiar","重命名当前账户":"Renombrar","删除当前账户":"Borrar cuenta","当前":"Actual","还没有其他账户":"No hay otras cuentas","账户「":"Cuenta «","已删除":"Borrado","切换到":"Cambiado a","🤖 图片识别":"🤖 Reconocimiento de imágenes","填一次就好，之后在日程 / 任务 / 作业里都能直接传截图识别":"Configúralo una vez y podrás subir capturas en Agenda / Tareas / Deberes","API Key（只存在这台电脑上）":"API Key (solo en este equipo)","传图时图片会发给你选的服务商":"Las imágenes se envían al proveedor elegido","，除此之外不会传给别处。没有 Key 也不影响别的功能——粘文字照样能用。":". Nada más se comparte. Sin clave, pegar texto sigue funcionando.","🎁 把工作台发给别人":"🎁 Compartir este espacio","这个文件本身就是完整程序，发给谁都能直接用":"Este archivo es toda la aplicación","导出备份（JSON）":"Exportar copia (JSON)","备份已下载":"Copia descargada","点这里换颜色 / 加账户":"Colores / cuentas","删除这笔记录？":"¿Borrar este registro?","金额要大于 0":"El importe debe ser mayor que 0","已导出 ":"Exportado ","还没认出":"","导入了 ":"Importado ","导入成功":"Importado correctamente","这个文件读不了，换一个备份试试":"No se puede leer este archivo","本地存储不可用，改动只在本次有效":"Almacenamiento no disponible; cambios solo en esta sesión","清空所有勾选和记录，回到初始状态？建议先导出备份。":"¿Restablecer todo? Exporta una copia antes.","已重置":"Restablecido","换成「":"Cambiado a «","自定义颜色已生效":"Color aplicado","删除账户「":"Borrar cuenta «","优先级改成「":"Prioridad: «","删掉这笔记录？":"¿Borrar este registro?","项待办":"pendientes","项":"elementos","条":"","交付物":"Entregables","清单":"Lista","账单":"Factura","月":"mes","日":"d","年":"año","每周":"Semanal","随手加，做完打个勾":"Añade cuando quieras y marca al terminar","加一件要做的事…":"Añade algo que hacer…","例如：导出成片、检查命名…":"p. ej. Exportar el vídeo, revisar el nombre…","例如：找参考片、导出成片、问老师命名规范…":"p. ej. Buscar clips, exportar, preguntar el nombre…","例如：剪第三期、交作业、和妈妈视频…":"p. ej. Editar el cap. 3, entregar, videollamada…","例如：学习通":"p. ej. Plataforma del curso","想做点什么？":"¿Qué necesitas hacer?","要做的事":"Por hacer","直接粘贴网址，不带 https:// 也行":"Pega la URL (https:// opcional)","这个网站用来干嘛":"¿Para qué es este sitio?","把喜欢的网站加进来，点「打开」会在新标签页跳转":"«Abrir» carga el sitio en otra pestaña","只支持 http / https；网址、名称、备注都只存在这台电脑上，不会上传到任何地方。":"Solo http / https. Los datos se quedan en este equipo.","输入名字，比如室友、同组同学":"Escribe un nombre, p. ej. compañero","全部":"Todo","支持：2026-11-15 / 11月15日 / 15号 / 明天 / 周三 / 18:30 / 下午3点 / 三点半。图片识别需要先在「⚙️ 设置 → 图片识别」里填一次 API Key。":"Admite: 2026-11-15 / 15 nov / día 15 / mañana / miércoles / 18:30 / 15:00. El reconocimiento necesita una API Key en Ajustes.","没写日期就当 今天":"Sin fecha = hoy","没写日期就当":"Sin fecha =","一串任务整段粘进来，或传张截图":"Pega una lista de tareas o una captura","从学习通、微信、课程表里整段复制过来":"Copia un bloque del campus, chat o horario","把作业要求整段粘进来 / 传截图":"Pega el enunciado o una captura","例：":"Ejemplo:","小提示：选「收入」时分类会自动换成生活费 / 兼职那一组。":"Consejo: al elegir «Ingresos» cambian las categorías.","留空用默认":"Vacío = por defecto","留空用服务商默认地址":"Vacío = dirección del proveedor","支持通义千问 qwen-vl（阿里云百炼）、智谱 GLM-4V、以及任何兼容 OpenAI 格式的多模态接口。":"Compatible con Qwen-VL, GLM-4V y cualquier API multimodal estilo OpenAI.","通义千问 qwen-vl":"Qwen-VL (Alibaba)","智谱 GLM-4V":"Zhipu GLM-4V","OpenAI 兼容接口":"Compatible con OpenAI","自定义":"Personalizado","青竹":"Bambú","烟紫":"Lila","胭脂":"Rosa","海盐":"Sal marina","茶褐":"Té","墨黑":"Tinta","珊瑚":"Coral","靛蓝":"Índigo","数据只在本浏览器里，换电脑或换浏览器都看不到。想带走/分享，用左侧「导出备份」，别人在他的浏览器里点「导入」就能用同一套内容。":"Los datos viven en este navegador. Para llevarlos o compartirlos usa «Exportar».","把这个 HTML 文件直接发给同学（微信、QQ 都行），他双击打开就能用。他可以在「⚙️ 设置」里挑自己的颜色、建自己的账户，数据存在他自己的电脑上，不会看到你的东西。":"Envía este archivo HTML a quien quieras: se abre con doble clic, cada uno elige sus colores y su cuenta, y los datos se quedan en su equipo.","流水 ":"Movimientos","账单 ":"Factura ","添加网站":"Añadir sitio","素材":"Materiales","工具":"Herramientas","生活":"Vida","课程、作业、生活都放这儿，做完打个勾":"Cursos, deberes y vida aquí; marca al terminar","想到什么写什么…":"Escribe lo que se te ocurra…","导出 2026-11月 明细（Excel）":"Exportar (Excel)"," 个":"","交付物 ":"Entregables "," 已完成 · 清单共 ":" hecho · lista "," 笔 · 平均每天支出 ":" registros · gasto diario medio ","提交截止":"Entrega","明天":"Mañana","共 ":"Total "," 小时":" h","已过期 ":"Vencido "," 天":" días","截至":"Hasta","小玉的工作台":"Espacio de trabajo","的工作台":" — espacio","顺手加，做完打个勾":"Añade y marca al terminar","已截止":"Cerrado","全天":"Todo el día","截止":"Vence","紧急程度：":"Prioridad: ","改截止时间":"Cambiar fecha","要交的东西":"Qué entregar","提交前自查":"Revisión antes de entregar","文件名生成器":"Generador de nombres","保存修改":"Guardar","正在修改这个网站，改完点「保存修改」":"Editando el sitio — pulsa Guardar","网址只支持 http / https；网址、名称、备注都只存在这台电脑上，不会上传到任何地方。":"Solo enlaces http / https. Todo se queda en este ordenador.","明细（Excel）":"detalle (Excel)"," 月度小结":" resumen mensual"," 年度小结":" resumen anual"," 项":" elementos"," 项待办":" pendientes"," 笔":"registros"," 笔 ":" registros","分":"pts","日程":"Agenda","今天":"Hoy","之后":" después","选一个看得惯的语言，整页立刻换掉，只影响你自己的账户":"Elige el idioma que prefieras: toda la página cambia al instante. Solo afecta a tu cuenta.","后天":"Pasado mañana","待定日期":"Sin fecha","距":"Faltan ","任务":"Tarea","最近没有到期的事":"Nada próximo a vencer"},"fr":{"总览":"Aperçu","作业管家":"Devoirs","我的任务":"Tâches","日程安排":"Agenda","常用网站":"Favoris","记账":"Budget","设置":"Réglages","点这里切换 / 新建账户":"Cliquer pour changer / ajouter","数据（存在这台电脑上）":"Données (sur cet ordinateur)","导出备份":"Exporter","导入":"Importer","重置":"Réinitialiser","离线可用 · 关掉页面数据不丢":"Hors ligne · données conservées","距作业截止":"Temps restant","月账单":"Mois","年账单":"Année","按月":"Par mois","按年":"Par an","支出":"Dépenses","收入":"Revenus","结余":"Solde","全年支出":"Dépenses annuelles","全年收入":"Revenus annuels","净结余":"Solde net","月度小结":"Bilan mensuel","年度小结":"Bilan annuel","流水":"Mouvements","每月明细":"Détail mensuel","记一笔":"Ajouter","花了多少、进了多少，随手记下就好":"Notez ce que vous dépensez et gagnez","收 / 支":"Type","金额（元）":"Montant (CNY)","分类":"Catégorie","日期":"Date","备注（可不填）":"Note (facultatif)","记下":"Enregistrer","月份":"Mois","上一月":"Mois précédent","下一月":"Mois suivant","上一年":"Année précédente","下一年":"Année suivante","回到本月":"Ce mois","回到今年":"Cette année","吃饭":"Repas","交通":"Transport","学习":"Études","购物":"Achats","娱乐":"Loisirs","住宿":"Logement","人情":"Cadeaux","其他":"Autre","生活费":"Argent de poche","兼职":"Petit boulot","红包":"Enveloppe rouge","奖学金":"Bourse","导出":"Exporter","打印 / 存 PDF":"Imprimer / PDF","明细":"Détails","备份":"Sauvegarde","这个月还没记账":"Rien ce mois-ci","还没有流水，上面记第一笔吧":"Aucun mouvement. Ajoutez le premier ci-dessus.","从近到远，点 × 可以删掉记错的":"Du plus récent au plus ancien. × pour supprimer.","共":"Total","笔":"entrées","平均每天支出":"Dépense quotidienne moyenne","月均支出":"Dépense mensuelle moyenne","平均每月":"Moyenne mensuelle","点某个月可以跳进月账单":"Cliquez un mois pour ouvrir son budget","哪个月花得多，一眼就看出来":"Voyez d'un coup d'œil le mois le plus cher","还没有账单可以导出":"Rien à exporter pour l'instant","没有记录":"Aucun enregistrement","已导出":"Exporté","已复制，可以直接粘贴了":"Copié — collez où vous voulez","复制失败，请手动选中文字":"Copie impossible. Sélectionnez le texte.","图片识别":"Reconnaissance d'images","已配置":"Configuré","未配置":"Non configuré","主题色":"Couleur du thème","每人各自保存":"Enregistré par compte","账户":"Compte","深色模式":"Mode sombre","服务商":"Fournisseur","模型":"Modèle","保存":"Enregistrer","接口地址（一般不用改，走代理时用）":"Point d'accès (rarement modifié)","把工作台发给别人":"Partager cet espace","语言":"Langue","界面语言":"Langue de l'interface","🔥 最该先做的事":"🔥 À faire en premier","按轻重缓急自动排":"Trié par priorité","紧急的先上，快到期的往前排；点一下直接跳过去":"Urgent d'abord, échéance proche en haut. Cliquez pour y aller.","没有待办了，安心休息 🍃":"Tout est fait, reposez-vous 🍃","重要":"Important","普通":"Normal","不着急":"Plus tard","十万火急":"Très urgent","紧急程度":"Priorité","改紧急程度":"Changer la priorité","优先级":"Priorité","还剩":"Reste","天":"jours","今天到期":"Aujourd'hui","已过期":"En retard","没有期限":"Sans échéance","今天还剩":"Aujourd'hui, encore","📅 今天的日程":"📅 Aujourd'hui","今天没有安排，安心做事 🍃":"Rien de prévu aujourd'hui 🍃","全部日程":"Tout l'agenda","看日程":"Voir l'agenda","去处理作业 →":"Aller aux devoirs →","去记一笔 →":"Ajouter une opération →","💰 这个月的账":"💰 Ce mois-ci","本月支出":"Dépensé","本月收入":"Reçu","收支一目了然，点进去记一笔":"Votre mois en un coup d'œil","离交作业最近的一件事，先盯着它":"L'échéance la plus proche","截止：":"Remise :","课程：":"Cours :","🎯 当前作业":"🎯 Devoir en cours","＋ 新作业":"＋ Nouveau","内容 / 作品名":"Titre / œuvre","学号":"N° étudiant","姓名":"Nom","老师要求「学号 姓名 内容 创意作品/设计说明」，填一次自动出两个名字":"Remplissez une fois, les deux noms de fichier sont générés","🏷️ 文件名生成器":"🏷️ Générateur de noms","生成文件名":"Générer","复制":"Copier","复制全文（粘到答题框）":"Tout copier (coller dans la réponse)","✅ 要交的东西":"✅ À rendre","一个作业一个清单，勾完就不会漏东西":"Une liste par devoir, rien n'est oublié","🔍 提交前自查":"🔍 Vérification avant envoi","点「提交」之前，从上到下对一遍":"Relisez avant d'envoyer","完成度：":"Avancement :","分值：":"Points :","✍️ 创作说明草稿":"✍️ Brouillon de la note","自动保存":"Enregistré auto.","边写边存，切走也不会丢":"Enregistré au fil de la frappe","恢复模板":"Restaurer le modèle","看例子":"Voir un exemple","按课程要求起好了框架，把括号里的内容换成自己的就行":"Structure prête, remplacez ce qui est entre crochets","创意作品":"Œuvre créative","设计说明":"Note de conception","课程":"Cours","作业":"Devoir","新建作业":"Nouveau devoir","删除当前":"Supprimer","添加":"Ajouter","作业建好了，去勾清单":"Devoir créé","新作业加好了":"Devoir ajouté","已恢复模板":"Modèle restauré","生成好了，记得按实际文件改扩展名":"Généré, adaptez l'extension","用模板覆盖现在写的内容？":"Remplacer votre texte par le modèle ?","已复制":"Copié","任务清单":"Liste des tâches","按「紧急程度 + 离到期远近」自动排序，最该做的在最上面":"Trié par priorité et échéance","要做什么":"À faire","添加任务":"Ajouter une tâche","哪天前做完（可不填）":"Échéance (facultatif)","全部任务 →":"Toutes les tâches →","想到什么就加，并按轻重缓急排好序；做完打勾":"Ajoutez au fil des idées, cochez une fois fait","进行中":"En cours","已完成":"Terminé","这里还没有任务，上面加一条吧":"Aucune tâche pour l'instant","还没有待办，下面加一条 ✍️":"Rien en attente ✍️","任务加好了":"Tâche ajoutée","📌 随手记":"📌 Notes","选题、灵感、要问老师的话，先丢这儿":"Sujets, idées, questions au prof","边写边存，只有你自己能看到":"Sauvé au fil de la frappe, visible par vous seul","清空":"Vider","添加日程":"Ajouter un événement","快速加一条今天的事":"Ajouter pour aujourd'hui","时间":"Heure","还没写日期就当...":"Sans date =","还没写日期就当 今天":"Sans date = aujourd'hui","按时间排好了，过期的也会留在下面，方便回头看":"Trié par heure ; le passé reste en dessous","还没有日程，上面加一条吧":"Aucun événement","日程加好了":"Événement ajouté","加到今天了":"Ajouté à aujourd'hui","🌐 常用网站":"🌐 Favoris","把自己喜欢的网站放进来，点一下直接打开":"Vos sites préférés à un clic","网站名称":"Nom du site","网址":"URL","管理我的网站 →":"Gérer mes sites →","我的收藏":"Mes sites","点卡片上的「打开」直接跳转":"« Ouvrir » vous y emmène","打开 ↗":"Ouvrir ↗","编辑":"Modifier","删除":"Supprimer","网站加好了，点「打开」就能跳过去":"Site ajouté","给网站起个名字吧":"Donnez un nom au site","网址看起来不对，检查一下再试":"Cette URL semble incorrecte","删掉这个网站？":"Supprimer ce site ?","还没有网站，去「常用网站」加几个吧":"Aucun site pour l'instant","这一类还没有网站，用上面的表单加一个吧":"Catégorie vide","取消":"Annuler","改好了":"Modifié","📥 直接粘进来 / 传张图":"📥 Coller / image","识别文字":"Analyser le texte","🔍 识别图片":"🔍 Lire l'image","📷 选图片":"📷 Choisir une image","展开":"Déplier","收起":"Replier","清空图片":"Retirer l'image","也可以把截图直接拖到上面的框里，或在那里 Ctrl+V 粘贴":"Glissez une capture dans la zone ou collez avec Ctrl+V","没认出内容，一段一行再试试":"Rien reconnu. Un élément par ligne","认出":"Détecté","图片识出":"Lu dans l'image","图片准备好了，点「识别图片」":"Image prête : cliquez sur « Lire l'image »","图片放好了，点「识别图片」":"Image ajoutée","图片粘好了，点「识别图片」":"Image collée","先选一张图片":"Choisissez d'abord une image","例子填好了，点「识别文字」看看":"Exemple rempli : cliquez sur « Analyser le texte »","还没填 API Key，去「设置 → 图片识别」填一下":"Pas encore de clé API (Réglages → Reconnaissance)","一条一份":"","待确认":"","⚙️ 设置":"⚙️ Réglages","🎨 主题色":"🎨 Couleur du thème","挑一个顺眼的，改完立刻生效，只影响你自己的账户":"Appliqué aussitôt, pour votre compte seulement","自定义主色":"Couleur personnalisée","用这个色":"Utiliser cette couleur","想用别的颜色？点下面自己调一个（浏览器自带的取色器，选完直接生效）。":"Une autre couleur ? Choisissez-la ci-dessous.","晚上看屏幕更舒服，配色会自动跟着主题走":"Plus confortable le soir","👤 账户":"👤 Comptes","每个账户的作业、任务、日程、网站都是分开的，互不打扰":"Chaque compte a ses devoirs, tâches, agenda et sites","新建账户":"Nouveau compte","创建并切换":"Créer et basculer","重命名当前账户":"Renommer","删除当前账户":"Supprimer le compte","当前":"Actuel","还没有其他账户":"Aucun autre compte","账户「":"Compte «","已删除":"Supprimé","切换到":"Basculé sur","🤖 图片识别":"🤖 Reconnaissance d'images","填一次就好，之后在日程 / 任务 / 作业里都能直接传截图识别":"À régler une fois ; ensuite glissez des captures dans Agenda / Tâches / Devoirs","API Key（只存在这台电脑上）":"Clé API (sur cet ordinateur uniquement)","传图时图片会发给你选的服务商":"Les images sont envoyées au fournisseur choisi","，除此之外不会传给别处。没有 Key 也不影响别的功能——粘文字照样能用。":". Rien d'autre n'est transmis. Sans clé, coller du texte fonctionne toujours.","🎁 把工作台发给别人":"🎁 Partager cet espace","这个文件本身就是完整程序，发给谁都能直接用":"Ce fichier est toute l'application","导出备份（JSON）":"Exporter (JSON)","备份已下载":"Sauvegarde téléchargée","点这里换颜色 / 加账户":"Couleurs / comptes","删除这笔记录？":"Supprimer cette opération ?","金额要大于 0":"Le montant doit être supérieur à 0","已导出 ":"Exporté ","还没认出":"","导入了 ":"Importé ","导入成功":"Importé avec succès","这个文件读不了，换一个备份试试":"Fichier illisible, essayez une autre sauvegarde","本地存储不可用，改动只在本次有效":"Stockage local indisponible ; changements valables pour cette session","清空所有勾选和记录，回到初始状态？建议先导出备份。":"Tout réinitialiser ? Exportez une sauvegarde d'abord.","已重置":"Réinitialisé","换成「":"Passé à «","自定义颜色已生效":"Couleur appliquée","删除账户「":"Supprimer le compte «","优先级改成「":"Priorité : «","删掉这笔记录？":"Supprimer cette opération ?","项待办":"en attente","项":"éléments","条":"","交付物":"Livrables","清单":"Liste","账单":"Relevé","月":"mois","日":"j","年":"an","每周":"Chaque semaine","随手加，做完打个勾":"Ajoutez au besoin, cochez une fois fait","加一件要做的事…":"Ajouter une chose à faire…","例如：导出成片、检查命名…":"ex. Exporter le montage, vérifier le nom…","例如：找参考片、导出成片、问老师命名规范…":"ex. Trouver des extraits, exporter, demander le nom…","例如：剪第三期、交作业、和妈妈视频…":"ex. Monter l'ép. 3, rendre le devoir, appel visio…","例如：学习通":"ex. Plateforme du cours","想做点什么？":"Que voulez-vous faire ?","要做的事":"À faire","直接粘贴网址，不带 https:// 也行":"Collez l'URL (https:// facultatif)","这个网站用来干嘛":"À quoi sert ce site","把喜欢的网站加进来，点「打开」会在新标签页跳转":"« Ouvrir » charge le site dans un nouvel onglet","只支持 http / https；网址、名称、备注都只存在这台电脑上，不会上传到任何地方。":"http / https uniquement. Tout reste sur cet ordinateur.","输入名字，比如室友、同组同学":"Entrez un nom, ex. colocataire","全部":"Tout","支持：2026-11-15 / 11月15日 / 15号 / 明天 / 周三 / 18:30 / 下午3点 / 三点半。图片识别需要先在「⚙️ 设置 → 图片识别」里填一次 API Key。":"Formats : 2026-11-15 / 15 nov. / le 15 / demain / mercredi / 18:30 / 15 h. La reconnaissance d'images nécessite une clé API dans Réglages.","没写日期就当 今天":"Sans date = aujourd'hui","没写日期就当":"Sans date =","一串任务整段粘进来，或传张截图":"Collez une liste de tâches ou une capture","从学习通、微信、课程表里整段复制过来":"Copiez un bloc depuis le campus, un chat ou l'emploi du temps","把作业要求整段粘进来 / 传截图":"Collez la consigne ou une capture","例：":"Exemple :","小提示：选「收入」时分类会自动换成生活费 / 兼职那一组。":"Astuce : « Revenus » change les catégories.","留空用默认":"Vide = par défaut","留空用服务商默认地址":"Vide = adresse du fournisseur","支持通义千问 qwen-vl（阿里云百炼）、智谱 GLM-4V、以及任何兼容 OpenAI 格式的多模态接口。":"Compatible Qwen-VL, GLM-4V et toute API multimodale au format OpenAI.","通义千问 qwen-vl":"Qwen-VL (Alibaba)","智谱 GLM-4V":"Zhipu GLM-4V","OpenAI 兼容接口":"Compatible OpenAI","自定义":"Personnalisé","青竹":"Bambou","烟紫":"Lilas","胭脂":"Rose","海盐":"Sel marin","茶褐":"Thé","墨黑":"Encre","珊瑚":"Corail","靛蓝":"Indigo","数据只在本浏览器里，换电脑或换浏览器都看不到。想带走/分享，用左侧「导出备份」，别人在他的浏览器里点「导入」就能用同一套内容。":"Les données restent dans ce navigateur. Pour les emporter, utilisez « Exporter ».","把这个 HTML 文件直接发给同学（微信、QQ 都行），他双击打开就能用。他可以在「⚙️ 设置」里挑自己的颜色、建自己的账户，数据存在他自己的电脑上，不会看到你的东西。":"Envoyez ce fichier HTML : il suffit de double-cliquer. Chacun choisit ses couleurs et son compte, et les données restent sur son ordinateur.","流水 ":"Mouvements","账单 ":"Relevé ","添加网站":"Ajouter un site","素材":"Ressources","工具":"Outils","生活":"Vie","课程、作业、生活都放这儿，做完打个勾":"Cours, devoirs et vie ici ; cochez une fois fait","想到什么写什么…":"Écrivez ce qui vous passe par la tête…","导出 2026-11月 明细（Excel）":"Exporter (Excel)"," 个":"","交付物 ":"Livrables "," 已完成 · 清单共 ":" fait · liste "," 笔 · 平均每天支出 ":" entrées · dépense quotidienne moyenne ","提交截止":"Remise","明天":"Demain","共 ":"Total "," 小时":" h","已过期 ":"En retard "," 天":" jours","截至":"Jusqu’à","小玉的工作台":"Espace de travail","的工作台":" — espace","顺手加，做完打个勾":"Ajoutez au fil de l’eau, cochez une fois fait","已截止":"Clôturé","全天":"Toute la journée","截止":"Échéance","紧急程度：":"Priorité : ","改截止时间":"Modifier l’échéance","要交的东西":"À rendre","提交前自查":"Vérif. avant envoi","文件名生成器":"Générateur de noms","保存修改":"Enregistrer","正在修改这个网站，改完点「保存修改」":"Modification — cliquez sur Enregistrer","网址只支持 http / https；网址、名称、备注都只存在这台电脑上，不会上传到任何地方。":"Uniquement des liens http / https. Tout reste sur cet ordinateur.","明细（Excel）":"détail (Excel)"," 月度小结":" bilan mensuel"," 年度小结":" bilan annuel"," 项":" éléments"," 项待办":" en attente"," 笔":"entrées"," 笔 ":" entrées ","分":"pts","日程":"Agenda","今天":"Aujourd'hui","之后":" après","选一个看得惯的语言，整页立刻换掉，只影响你自己的账户":"Choisissez la langue qui vous convient : toute la page change aussitôt. Cela ne concerne que votre compte.","后天":"Après-demain","待定日期":"Date à fixer","距":"Dans ","任务":"Tâche","最近没有到期的事":"Rien à échéance"}};
+
+
+/* 所有中文源词条，按长度倒序（长串优先，避免「支出」先吃掉「全年支出」） */
+const ZH_KEYS=[...new Set(Object.values(I18N).flatMap(o=>Object.keys(o)))].sort((a,b)=>b.length-a.length);
+function curLang(){return (P&&P.lang)||'zh'}
+/* 取词：t('中文') → 当前语言译文；无译文回退中文 */
+function t(k){
+  const L=curLang();
+  if(L==='zh')return k;
+  const d=I18N[L];if(!d)return k;
+  return d[k]!=null?d[k]:k;
+}
+/* 整段兜底翻译：把渲染结果里出现的已知词条替换掉（长串优先，词条数少的语言回退到英文再回退中文） */
+function localizeHtml(html){
+  const L=curLang();
+  if(L==='zh')return html;
+  const d=I18N[L];if(!d)return html;
+  const hit=k=>(d[k]!=null?d[k]:(I18N.en[k]!=null?I18N.en[k]:null));
+  /* 只看标签外面的纯文本，属性里的 placeholder / title 一律不碰 */
+  const out=[];
+  const re=/<[^>]*>/g;
+  let last=0,m;
+  while((m=re.exec(html))){
+    out.push(tr(html.slice(last,m.index)));   // 标签之间的文本
+    out.push(m[0]);                            // 标签原样保留
+    last=m.index+m[0].length;
+  }
+  out.push(tr(html.slice(last)));
+  return out.join('');
+  function tr(seg){
+    if(!seg||!/[\u4e00-\u9fa5]/.test(seg))return seg;
+    const lead=(seg.match(/^\s*/)||[''])[0], trail=(seg.match(/\s*$/)||[''])[0];
+    const core=seg.slice(lead.length,seg.length-trail.length);
+    if(!core)return seg;
+    /* ① 整段直接命中 */
+    let v=hit(core);
+    if(v!=null)return lead+v+trail;
+    /* ② 含数字的长句（日期、金额）：只替换里面明确登记过的长词条 */
+    if(/\d/.test(core)){
+      let o=core;
+      ZH_KEYS.forEach(k=>{if(k.length<4||o.indexOf(k)<0)return;const vv=hit(k);if(vv!=null)o=o.split(k).join(vv)});
+      return lead+o+trail;
+    }
+    /* ③ 带分隔符的拼串（「课程·活动」「明天 · 1」）：按分隔符切开，每段单独翻，可译的译、译不了的原样 */
+    const gs=core.split(/(\s*[·•|｜]\s*)/);
+    if(gs.length>1){
+      const gd=gs.map((p,idx)=>{
+        if(idx%2)return p;
+        const k=p.trim();
+        if(!k)return p;
+        const vv=hit(k);
+        return vv!=null?p.replace(k,vv):p;
+      });
+      if(gd.some((p,idx)=>idx%2===0&&p!==gs[idx]))return lead+gd.join('')+trail;
+    }
+    /* ④ 纯中文长句：整句不行就按中文标点切子句，子句能全翻就翻 */
+    const parts=core.split(/(?<=[，。；！？、：])/);
+    if(parts.length>1){
+      const done=parts.map(p=>{const k=p.trim();const vv=hit(k);return vv!=null?p.replace(k,vv):null});
+      if(done.every(Boolean))return lead+done.join('')+trail;
+    }
+    /* ⑤ 兜底：逐词条替换短片段 */
+    let o=core;
+    ZH_KEYS.forEach(k=>{if(k.length<2||o.indexOf(k)<0)return;const vv=hit(k);if(vv!=null)o=o.split(k).join(vv)});
+    return lead+o+trail;
+  }
+}
+/* 给动态拼出来的文案用：把「中文 + 数字/符号」的碎片整段翻一遍 */
+function tn(s){return curLang()==='zh'?String(s):localizeHtml(String(s))}
+/* 文案取值：t('中文')，缺译文时回退英文，再回退中文 */
+function tt(k){
+  const L=curLang();
+  if(L==='zh')return k;
+  const d=I18N[L]||{};
+  return d[k]!=null?d[k]:(I18N.en[k]!=null?I18N.en[k]:k);
+}
+
+/* ============ 轻重缓急 ============ */
+const PRI=[
+ {k:'p0',n:'十万火急',s:'p0',rank:0,color:'#C4453A'},
+ {k:'p1',n:'重要',s:'p1',rank:1,color:'#C97A21'},
+ {k:'p2',n:'普通',s:'p2',rank:2,color:'#4E7C59'},
+ {k:'p3',n:'不着急',s:'p3',rank:3,color:'#8895A0'}
+];
+const priOf=k=>PRI.find(x=>x.k===k)||PRI[2];
+function priBadge(k){const p=priOf(k);return `<span class="pri ${p.s}" title="${p.n}">${p.n}</span>`}
+/* 统一成"到期时间戳"，用于排序：日程取日期+时间，任务取 due，作业取 deadline */
+function dueOf(x){
+  if(x.deadline)return new Date(x.deadline).getTime();
+  if(x.date)return new Date(x.date+(x.time?('T'+x.time):'T23:59')).getTime();
+  if(x.due)return new Date(x.due.length<=10?x.due+'T23:59':x.due).getTime();
+  return Infinity;
+}
+/* 综合分：重要程度优先，其次离到期越近越前；没有期限的排后面 */
+function scoreOf(x){
+  const d=dueOf(x),now=Date.now();
+  let s=priOf(x.pri).rank*100;
+  if(d!==Infinity){
+    const days=(d-now)/86400000;
+    if(days<0)s-=50;                 // 已过期，最该看见
+    else if(days<1)s-=20;
+    else if(days<3)s-=10;
+    else if(days<7)s-=4;
+    s+=Math.min(days,999)*0.02;      // 同优先级里，越近越前
+  }else s+=20;                       // 没期限的往后放
+  return s;
+}
+function sortByUrgent(list){return [...list].sort((a,b)=>scoreOf(a)-scoreOf(b))}
+/* 把作业、日程、任务合成一张"今天该先做什么"的表 */
+function urgentAll(){
+  const out=[];
+  S.hws.forEach(h=>{if(pct(h)<100)out.push({...h,kind:'作业',label:h.title,sub:h.course,to:'hw'})});
+  S.events.forEach(e=>{if(!e.done)out.push({...e,kind:'日程',label:e.title,sub:e.cat,to:'cal'})});
+  S.tasks.forEach(t=>{if(!t.done)out.push({...t,kind:'任务',label:t.t,sub:t.cat,to:'task'})});
+  return sortByUrgent(out);
+}
+function leftText(x){
+  const d=dueOf(x);if(d===Infinity)return '没有期限';
+  const now=Date.now(),diff=d-now;
+  if(diff<0){
+    // 按「自然日」算，避免今天到期被算成已过期
+    const dayDiff=Math.round((startOfDay(new Date(d))-startOfDay(new Date(now)))/86400000);
+    if(dayDiff>=0)return t('今天到期');
+    return t('已过期 ')+Math.abs(dayDiff)+t(' 天');
+  }
+  const dayDiff=Math.floor((startOfDay(new Date(d))-startOfDay(new Date(now)))/86400000);
+  if(dayDiff===0){const hh=Math.max(1,Math.ceil(diff/3600000));return t('今天还剩')+hh+t(' 小时')}
+  return t('还剩')+dayDiff+t(' 天');
+}
+function startOfDay(dt){const t=new Date(dt);t.setHours(0,0,0,0);return t.getTime()}
+
+/* ============ 默认数据 ============ */
+const HW_DELIVER=[
+ {t:'原始视频 / 链接 / 效果',d:'拍摄或收集的原始素材，或可访问的链接、效果截图',done:false},
+ {t:'个人创意作品',d:'最终成片，命名按「学号 姓名 内容 创意作品」',done:false},
+ {t:'创作说明',d:'粘贴到答题框，同时按规范另存一份文件',done:false}
+];
+const HW_CHECK=[
+ {t:'文件已按「学号 姓名 内容 创意作品/设计说明」规范命名',done:false},
+ {t:'确认老师标注的「（P大写）」具体指什么',done:false},
+ {t:'成片能正常播放 / 链接能打开',done:false},
+ {t:'创作说明已填进答题框',done:false},
+ {t:'最后点的是「提交」，不是只点「暂时保存」',done:false}
+];
+const DRAFT=`《作品名》创作说明
+
+一、作品主题
+（一句话说清作品讲什么、想传达什么）
+
+二、创意来源
+参考了（填写参考的高质量作品 / 链接），结合课程所讲的（____），确定了这个方向。
+
+三、视觉与声音设计
+（主色调、字体、版式、镜头节奏、转场、配乐等）
+
+四、制作流程
+1. 素材准备：
+2. 主要制作步骤：
+3. 合成与导出：
+
+五、使用工具
+（填写你实际用的剪辑 / 图像 / 音频软件）
+
+六、原创声明
+素材与元件均为本人制作（或取自 ____），作品由本人独立完成。`;
+const DEFAULT={
+ tab:'home',curHw:'h1',
+ name:{sid:'',nm:'袁玉明',topic:''},memo:'',refs:'',
+ hws:[{id:'h1',title:'创新创意作品',course:'非线性编辑',score:'100分',deadline:'2026-11-15T18:30',pri:'p1',
+   note:'论述题：根据课程要求，参考相关高质量作品，完成创新创意作品。提交原始视频/链接/效果、个人创意作品及创作说明。以「学号 姓名 内容 创意作品/设计说明」等规范命名（P大写）。',
+   deliver:HW_DELIVER.map(x=>({...x})),check:HW_CHECK.map(x=>({...x}))}],
+ events:[{id:'e1',date:'2026-11-15',time:'18:30',title:'非线性编辑 · 创新创意作品 提交截止',cat:'作业',done:false,pri:'p1'}],
+ drafts:{h1:DRAFT},
+ tasks:[],sites:[],bills:[],aiProf:null,
+ avatar:null   /* {k:'emoji',v:'🌙'} 或 {k:'img',v:'data:image/...'}，空 = 用名字首字 */
+};
+/* 内置头像（emoji）。想加自己中意的，往这个数组里塞就行 */
+const AVATARS=['🌙','🌸','🍀','🌊','⭐','🍊','🎧','📚','🦋','🐱','🐰','🦊','🍵','🌻','🎬','🎨','🧸','🕯️','☁️','🫧'];
+
+
+let S=load();
+let taskFilter='all',siteFilter='全部',editSiteId=null,billMonthFilter=null,billYearFilter=null,billMode='month';
+function dataKey(){return KEY+'::'+(P.user||'_guest')}
+function load(){
+  try{
+    const r=localStorage.getItem(dataKey());
+    if(r){const s=Object.assign(JSON.parse(JSON.stringify(DEFAULT)),JSON.parse(r));
+      if(['task','site','home','hw','cal','bill','me'].indexOf(s.tab)<0)s.tab='home';return s}
+  }catch(e){}
+  return JSON.parse(JSON.stringify(DEFAULT));
+}
+function save(){try{localStorage.setItem(dataKey(),JSON.stringify(S))}catch(e){toast('本地存储不可用，改动只在本次有效')}}
+function switchUser(u){
+  /* 只记录"当前是谁"，不动主题 —— 主题由各自账户的存档决定 */
+  const cur=rawProf()||{};
+  cur.user=u||null;
+  if(!cur.themes||typeof cur.themes!=='object')cur.themes={};
+  try{localStorage.setItem(PKEY,JSON.stringify(cur))}catch(e){}
+  P=prof();applyTheme(P);
+  S=load();taskFilter='all';siteFilter='全部';editSiteId=null;
+  window._impBox=null;billMonthFilter=null;billYearFilter=null;billMode='month';
+  render();renderUser();
+}
+const hw=()=>S.hws.find(x=>x.id===S.curHw)||S.hws[0];
+function pct(h){const a=[...h.deliver,...h.check];return a.length?Math.round(a.filter(x=>x.done).length/a.length*100):0}
+
+/* ============ 顶部 ============ */
+function renderTop(){
+  const LC=curLang(),d=new Date(),wkL=LC==='zh'?['日','一','二','三','四','五','六']:LC==='ja'?['日','月','火','水','木','金','土']:LC==='ko'?['일','월','화','수','목','금','토']:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const wk=wkL[d.getDay()],h=d.getHours();
+  const who=(P.user||'小玉').trim()||'小玉';
+  document.getElementById('greet').textContent=(h<6?'夜深了':h<11?'早上好':h<14?'中午好':h<18?'下午好':'晚上好')+'，'+who+' '+(h<6?'🌙':h<11?'☀️':'👋');
+  document.title=(LC==='zh'?who+' 的工作台':who+t('的工作台'));
+  const mdL=LC==='zh'?`${d.getMonth()+1}月${d.getDate()}日 星期${wk} · 今天也慢慢来，一件一件做`:LC==='ja'?`${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${wk}） · 今日もゆっくり、ひとつずつ`:LC==='ko'?`${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일 (${wk}) · 오늘도 천천히 하나씩`:`${wk}, ${d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})} · Take it slow today, one thing at a time`;
+  document.getElementById('dateLine').textContent=mdL;
+  const n=S.hws.filter(x=>pct(x)<100).length,b=document.getElementById('hwBadge');
+  b.textContent=n||'';b.style.display=n?'':'none';
+  const tn=S.tasks.filter(x=>!x.done).length,tb=document.getElementById('taskBadge');
+  tb.textContent=tn||'';tb.style.display=tn?'':'none';
+  tick();
+}
+function tick(){
+  /* 全表扫描：未完成的作业 / 日程 / 任务，谁离现在最近就算谁；已过的跳过 */
+  const now=Date.now();
+  const cand=[];
+  S.hws.forEach(h=>{if(pct(h)>=100)return;const d=new Date(h.deadline).getTime();if(!isNaN(d))cand.push({d,t:h.title,k:'作业'})});
+  S.events.forEach(e=>{if(e.done)return;const d=dueOf(e);if(d!==Infinity&&!isNaN(d))cand.push({d,t:e.title,k:'日程'})});
+  S.tasks.forEach(x=>{if(x.done)return;const d=dueOf(x);if(d!==Infinity&&!isNaN(d))cand.push({d,t:x.t,k:'任务'})});
+  cand.sort((a,b)=>a.d-b.d);
+  const next=cand.find(x=>x.d>now);   /* 过期的不显示，跳到下一个 */
+  const el=document.getElementById('cdText'),box=document.getElementById('cdBox');
+  const lbl=box.querySelector('small');
+  if(!next){
+    lbl.textContent=t('最近没有到期的事');
+    el.textContent='—';
+    box.classList.add('done');
+    return;
+  }
+  box.classList.remove('done');
+  lbl.textContent=t('距')+'「'+next.t+'」·'+t(next.k);
+  const tms=next.d-now;
+  const dd=Math.floor(tms/86400000),hh=Math.floor(tms%86400000/3600000),mm=Math.floor(tms%3600000/60000),ss=Math.floor(tms%60000/1000);
+  el.textContent=(dd?dd+'天 ':'')+pad(hh)+':'+pad(mm)+':'+pad(ss);
+}
+setInterval(tick,1000);
+
+/* ============ 总览 ============ */
+function vHome(){
+  const h=hw(),p=pct(h),ev=S.events.filter(e=>e.date===today()&&!e.done);
+  const undone=sortByUrgent(S.tasks.filter(x=>!x.done)).slice(0,5),sites=S.sites.slice(0,6);
+  const urgent=urgentAll().slice(0,4);
+  const mon=billMonth(S.bills,thisMonth());
+  return `
+  <div class="card" style="border-color:var(--soft2);background:var(--surface)">
+    <h2>🔥 最该先做的事 <span class="tag hot">按轻重缓急自动排</span></h2>
+    <div class="sub">紧急的先上，快到期的往前排；点一下直接跳过去</div>
+    ${urgent.length?`<div class="ulist">${urgent.map(x=>`
+      <div class="uitem" data-act="go" data-tab="${x.to}">
+        <div class="uleft">
+          ${priBadge(x.pri)}
+          <span class="ut">${esc(x.label)}</span>
+          <span class="cat">${esc(x.kind)}·${esc(x.sub||'')}</span>
+        </div>
+        <span class="uleft2 ${String(leftText(x)).indexOf('过期')>=0?'over':''}">${esc(leftText(x))}</span>
+      </div>`).join('')}</div>`:'<div class="empty">没有待办了，安心休息 🍃</div>'}
+  </div>
+
+  <div class="grid g2" style="margin-top:18px">
+    <div class="card">
+      <h2>🎯 当前作业 <span class="tag hot">进行中</span></h2>
+      <div class="sub">离交作业最近的一件事，先盯着它</div>
+      <div class="hero">
+        <div class="ring" style="--p:${p}%"><b>${p}%</b></div>
+        <div class="hero-info">
+          <h3>${esc(h.title)}</h3>
+          <p>${esc(h.course)} · ${esc(h.score)} · ${t('截止')} ${esc(h.deadline.replace('T',' '))}</p></p>
+          <div class="bar"><i style="width:${p}%"></i></div>
+          <div class="muted">${t('交付物 ')}${h.deliver.filter(x=>x.done).length}/${h.deliver.length}${t(' 已完成 · 清单共 ')}${[...h.deliver,...h.check].filter(x=>x.done).length}/${[...h.deliver,...h.check].length}${t(' 项')}</div>
+          <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn" data-act="go" data-tab="hw">去处理作业 →</button>
+            <button class="btn ghost" data-act="go" data-tab="cal">看日程</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>✅ ${t('我的任务')} <span class="tag">${S.tasks.filter(x=>!x.done).length}${t(' 项待办')}</span></h2>
+      <div class="sub">随手加，做完打个勾</div>
+      ${undone.length?undone.map(x=>`<label class="task" style="margin-bottom:7px"><input type="checkbox" data-chg="task" data-id="${x.id}">${priBadge(x.pri)}<span class="ti">${esc(x.t)}</span><span class="cat">${esc(x.cat)}</span></label>`).join(''):'<div class="empty">还没有待办，下面加一条 ✍️</div>'}
+      <form data-form="quickTask" class="form-row" style="margin-top:14px">
+        <div class="w"><input class="inp" name="t" placeholder="加一件要做的事…" required></div>
+        <div style="flex:0 0 100px"><select class="inp" name="pri">${PRI.map(p=>`<option value="${p.k}" ${p.k==='p1'?'selected':''}>${p.n}</option>`).join('')}</select></div>
+        <div style="flex:0 0 auto"><button class="btn" type="submit">添加</button></div>
+      </form>
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn ghost sm" data-act="go" data-tab="task">全部任务 →</button>
+        <button class="btn ghost sm" data-act="go" data-tab="bill">💰 记账</button>
+      </div>
+    </div>
+  </div>
+  <div class="grid g2e" style="margin-top:18px">
+    <div class="card">
+      <h2>${t('📅 今天的日程')} <span class="tag">${ev.length}${t(' 项')}</span></h2>
+      <div class="sub">${today()}</div>
+      ${ev.length?sortByUrgent(ev).map(e=>`<div class="evt ${e.cat==='作业'?'urgent':''}"><span class="tm">${esc(e.time||t('全天'))}</span>${priBadge(e.pri)}<span class="ti">${esc(e.title)}</span><span class="cat">${esc(e.cat)}</span></div>`).join(''):'<div class="empty">今天没有安排，安心做事 🍃</div>'}
+      <form data-form="quickEvt" class="form-row" style="margin-top:14px">
+        <div class="w"><label class="f">快速加一条今天的事</label><input class="inp" name="title" placeholder="例如：导出成片、检查命名…" required></div>
+        <div style="flex:0 0 90px"><input class="inp" name="time" type="time" value="20:00"></div>
+        <div style="flex:0 0 105px"><select class="inp" name="pri">${PRI.map(p=>`<option value="${p.k}" ${p.k==='p1'?'selected':''}>${p.n}</option>`).join('')}</select></div>
+        <div style="flex:0 0 auto"><button class="btn" type="submit">添加</button></div>
+      </form>
+    </div>
+    <div class="card">
+      <h2>🌐 ${t('常用网站')} <span class="tag">${S.sites.length}${t(' 个')}</span></h2>
+      <div class="sub">把自己喜欢的网站放进来，点一下直接打开</div>
+      ${sites.length?`<div class="qlinks">${sites.map((s,i)=>{const c=ico(s.name,i);return `<a class="qlink" href="${esc(s.url)}" target="_blank" rel="noopener noreferrer"><span class="qico" style="background:${c.bg}">${esc(c.ch)}</span><span class="nm">${esc(s.name)}</span><span class="arrow">↗</span></a>`}).join('')}</div>`:'<div class="empty">还没有网站，去「常用网站」加几个吧</div>'}
+      <div style="margin-top:12px"><button class="btn ghost sm" data-act="go" data-tab="site">管理我的网站 →</button></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:18px">
+    <h2>💰 这个月的账 <span class="tag">${thisMonth()}</span></h2>
+    <div class="sub">收支一目了然，点进去记一笔</div>
+    <div class="billsum">
+      <div><small>本月支出</small><b class="out">¥${fmt(mon.out)}</b></div>
+      <div><small>本月收入</small><b class="in">¥${fmt(mon.in)}</b></div>
+      <div><small>${t('结余')}</small><b>¥${fmt(mon.in-mon.out)}</b></div>
+    </div>
+  </div>`;
+}
+
+/* ============ 作业管家 ============ */
+function vHw(){
+  const h=hw(),n=S.name,base=[n.sid||'学号',n.nm||'姓名',n.topic||'内容'].join(' ');
+  const f1=base+' 创意作品.mp4',f2=base+' 设计说明.pdf';
+  return `
+  <div class="card">
+    <h2>📚 ${t('作业管家')}</h2>
+    <div class="sub">一个作业一个清单，勾完就不会漏东西</div>
+    <div class="hwlist">
+      ${S.hws.map(x=>`<button data-act="pickHw" data-id="${x.id}" class="${x.id===S.curHw?'on':''}">${esc(x.title)} · ${pct(x)}%</button>`).join('')}
+      <button data-act="addHw">＋ 新作业</button>
+      ${S.hws.length>1?`<button data-act="delHw" style="color:var(--red)">删除当前</button>`:''}
+    </div>
+    <div class="kv">
+      <span>课程：<b>${esc(h.course)}</b></span><span>分值：<b>${esc(h.score)}</b></span>
+      <span>截止：<b>${esc(h.deadline.replace('T',' '))}</b></span>
+      <span>紧急程度：<b>${priBadge(h.pri)}</b></span>
+      <span>完成度：<b>${pct(h)}%</b></span>
+    </div>
+    <div class="form-row" style="margin:10px 0 12px">
+      <div style="flex:0 0 150px"><label class="f">改紧急程度</label>
+        <select class="inp" data-pri="hw" data-id="${h.id}">${PRI.map(p=>`<option value="${p.k}" ${h.pri===p.k?'selected':''}>${p.n}</option>`).join('')}</select>
+      </div>
+      <div style="flex:0 0 200px"><label class="f">${t('改截止时间')}</label>
+        <input class="inp" type="datetime-local" data-dl="${h.id}" value="${esc(h.deadline)}">
+      </div>
+    </div>
+    <div class="note" style="margin-top:0">${esc(h.note)}</div>
+    ${importBox('hw','把作业要求整段粘进来 / 传截图','作业')}
+  </div>
+  <div class="grid g2e" style="margin-top:18px">
+    <div class="card">
+      <h2>✅ ${t('要交的东西')} <span class="tag">${h.deliver.filter(x=>x.done).length}/${h.deliver.length}</span></h2>
+      <div class="sub">${t('勾一项，进度就往前走一点')}</div>
+      <div>${h.deliver.map((x,i)=>chkHtml(x,i,'deliver')).join('')}</div>
+      <form data-form="addItem" class="form-row" style="margin-top:12px">
+        <input type="hidden" name="kind" value="deliver">
+        <div class="w"><input class="inp" name="t" placeholder="补一条要交的东西…" required></div>
+        <div style="flex:0 0 auto"><button class="btn ghost sm" type="submit">＋ 添加</button></div>
+      </form>
+    </div>
+    <div class="card">
+      <h2>🔍 ${t('提交前自查')} <span class="tag g">${h.check.filter(x=>x.done).length}/${h.check.length}</span></h2>
+      <div class="sub">点「提交」之前，从上到下对一遍</div>
+      <div>${h.check.map((x,i)=>chkHtml(x,i,'check')).join('')}</div>
+      <form data-form="addItem" class="form-row" style="margin-top:12px">
+        <input type="hidden" name="kind" value="check">
+        <div class="w"><input class="inp" name="t" placeholder="补一条自查项…" required></div>
+        <div style="flex:0 0 auto"><button class="btn ghost sm" type="submit">＋ 添加</button></div>
+      </form>
+    </div>
+  </div>
+  <div class="card" style="margin-top:18px">
+    <h2>🏷️ ${t('文件名生成器')}</h2>
+    <div class="sub">老师要求「学号 姓名 内容 创意作品/设计说明」，填一次自动出两个名字</div>
+    <div class="form-row">
+      <div><label class="f">学号</label><input class="inp" id="f_sid" value="${esc(n.sid)}" placeholder="填你的学号"></div>
+      <div><label class="f">姓名</label><input class="inp" id="f_nm" value="${esc(n.nm)}"></div>
+      <div class="w"><label class="f">内容 / 作品名</label><input class="inp" id="f_topic" value="${esc(n.topic)}" placeholder="填你这次的作品名"></div>
+      <div style="flex:0 0 auto"><button class="btn" data-act="genName">生成文件名</button></div>
+    </div>
+    <div class="namebox" id="nameBox">
+      <div class="nameline"><span class="tag">创意作品</span><code>${esc(f1)}</code><button class="btn ghost sm" data-act="copy" data-v="${esc(f1)}">复制</button></div>
+      <div class="nameline"><span class="tag">设计说明</span><code>${esc(f2)}</code><button class="btn ghost sm" data-act="copy" data-v="${esc(f2)}">复制</button></div>
+    </div>
+    <div class="note">⚠️ 先把上面的「学号 / 姓名 / 内容」换成真实的再复制；题目里那句「（P大写）」老师没展开说，交之前最好核对一下；扩展名 .mp4 / .pdf 按实际文件改。</div>
+  </div>
+  <div class="card" style="margin-top:18px">
+    <h2>✍️ 创作说明草稿 <span class="tag">自动保存</span></h2>
+    <div class="sub">按课程要求起好了框架，把括号里的内容换成自己的就行</div>
+    <textarea id="draft" rows="16" class="inp" style="font-size:12.5px">${esc(S.drafts[h.id]||'')}</textarea>
+    <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+      <button class="btn" data-act="copyDraft">复制全文（粘到答题框）</button>
+      <button class="btn ghost" data-act="resetDraft">恢复模板</button>
+      <span class="muted" style="align-self:center">边写边存，切走也不会丢</span>
+    </div>
+    <div class="form-row" style="margin-top:16px">
+      <div class="w"><label class="f">参考的高质量作品 / 链接（写进创作说明用）</label><input class="inp" id="refs" value="${esc(S.refs)}" placeholder="例如：某纪录频道片头、某品牌短片…"></div>
+    </div>
+  </div>`;
+}
+function chkHtml(x,i,kind){
+  return `<label class="chk"><input type="checkbox" data-chg="${kind}" data-i="${i}" ${x.done?'checked':''}><span class="txt">${esc(x.t)}${x.d?`<small>${esc(x.d)}</small>`:''}</span><button class="del" data-act="delItem" data-kind="${kind}" data-i="${i}" title="删除">×</button></label>`;
+}
+
+/* ============ 我的任务 ============ */
+function vTask(){
+  const raw=S.tasks.filter(x=>taskFilter==='all'?true:taskFilter==='doing'?!x.done:x.done);
+  const list=taskFilter==='done'?raw:sortByUrgent(raw);
+  const done=S.tasks.filter(x=>x.done).length;
+  return `
+  <div class="card">
+    <h2>✅ 我的任务</h2>
+    <div class="sub">想到什么就加，并按轻重缓急排好序；做完打勾</div>
+    <form data-form="addTask" class="form-row">
+      <div class="w"><label class="f">要做的事</label><input class="inp" name="t" placeholder="例如：找参考片、导出成片、问老师命名规范…" required></div>
+      <div style="flex:0 0 118px"><label class="f">分类</label><select class="inp" name="cat"><option>作业</option><option>课程</option><option>生活</option><option>其他</option></select></div>
+      <div style="flex:0 0 112px"><label class="f">紧急程度</label><select class="inp" name="pri">${PRI.map(p=>`<option value="${p.k}" ${p.k==='p1'?'selected':''}>${p.n}</option>`).join('')}</select></div>
+      <div style="flex:0 0 145px"><label class="f">哪天前做完（可不填）</label><input class="inp" name="due" type="date"></div>
+      <div style="flex:0 0 auto"><button class="btn" type="submit">添加任务</button></div>
+    </form>
+    ${importBox('task','一串任务整段粘进来，或传张截图')}
+  </div>
+  <div class="card" style="margin-top:18px">
+    <h2>${t('任务清单')} <span class="tag g">${done}/${S.tasks.length} ${t('已完成')}</span></h2>
+    <div class="sub">按「紧急程度 + 离到期远近」自动排序，最该做的在最上面</div>
+    <div class="chips">
+      ${[['all','全部'],['doing','进行中'],['done','已完成']].map(([v,n])=>`<button class="chip ${taskFilter===v?'on':''}" data-act="tFilter" data-v="${v}">${n}</button>`).join('')}
+    </div>
+    ${list.length?`<div style="margin-top:12px">${list.map(x=>`
+      <div class="task ${x.done?'done':''} ${(!x.done&&String(leftText(x)).indexOf('过期')>=0)?'overdue':''}">
+        <input type="checkbox" data-chg="task" data-id="${x.id}" ${x.done?'checked':''}>
+        ${priBadge(x.pri)}
+        <span class="ti">${esc(x.t)}${x.due?`<small class="muted"> · ${esc(x.due)} ${esc(leftText(x))}</small>`:''}</span>
+        <select class="minisel" data-pri="task" data-id="${x.id}">${PRI.map(p=>`<option value="${p.k}" ${x.pri===p.k?'selected':''}>${p.n}</option>`).join('')}</select>
+        <span class="cat">${esc(x.cat)}</span>
+        <button class="x" data-act="delTask" data-id="${x.id}" title="删除">×</button>
+      </div>`).join('')}</div>`:'<div class="empty" style="margin-top:14px">这里还没有任务，上面加一条吧</div>'}
+  </div>
+  <div class="card" style="margin-top:18px">
+    <h2>📌 随手记 <span class="tag">自动保存</span></h2>
+    <div class="sub">选题、灵感、要问老师的话，先丢这儿</div>
+    <textarea id="memo" rows="5" class="inp" placeholder="想到什么写什么…">${esc(S.memo||'')}</textarea>
+    <div class="muted" style="margin-top:8px">边写边存，只有你自己能看到</div>
+  </div>`;
+}
+
+/* ============ 粘贴解析 ============ */
+function parseDate(s){
+  let y,m,mo,d;
+  const today=new Date();
+  if(/(今天|今日)/.test(s))return ymd(today);
+  if(/(明天|明日)/.test(s)){const t=new Date(today.getTime()+86400000);return ymd(t)}
+  if(/(后天)/.test(s)){const t=new Date(today.getTime()+2*86400000);return ymd(t)}
+  // 「周三 / 下周三 / 星期五」→ 最近的将来那一天
+  if(m=s.match(/(这|本|下)?\s*(?:周|星期|礼拜)\s*([一二三四五六日天])/)){
+    const map={'一':1,'二':2,'三':3,'四':4,'五':5,'六':6,'日':0,'天':0};
+    const target=map[m[2]],cur=today.getDay();
+    let add=(target-cur+7)%7;
+    if(m[1]==='下')add=add===0?7:add+7;
+    else if(add===0)add=7;            // 「周三」当天说，按下一个周三算
+    const d2=new Date(today.getTime()+add*86400000);
+    return ymd(d2);
+  }
+  if(m=s.match(/(20\d{2})\s*[-\/.年]\s*(\d{1,2})\s*[-\/.月]\s*(\d{1,2})/)){y=+m[1];mo=+m[2];d=+m[3]}
+  else if(m=s.match(/(\d{1,2})\s*月\s*(\d{1,2})/)){y=today.getFullYear();mo=+m[1];d=+m[2]}
+  else if(m=s.match(/(?:^|[^\d:：])(\d{1,2})\s*[-\/.]\s*(\d{1,2})(?![\d:：])/)){y=today.getFullYear();mo=+m[1];d=+m[2]}
+  else if(m=s.match(/(\d{1,2})\s*[号日]/)){y=today.getFullYear();mo=today.getMonth()+1;d=+m[1]}
+  else return null;
+  if(mo<1||mo>12||d<1||d>31)return null;
+  return y+'-'+pad(mo)+'-'+pad(d);
+}
+const CN={'零':0,'一':1,'二':2,'两':2,'三':3,'四':4,'五':5,'六':6,'七':7,'八':8,'九':9,'十':10};
+function cnNum(s){
+  s=String(s||'').trim();
+  if(!s)return null;
+  if(/^\d+$/.test(s))return +s;
+  if(s==='十')return 10;
+  if(/^十[一二三四五六七八九]$/.test(s))return 10+CN[s[1]];
+  if(/^[一二三四五六七八九]十$/.test(s))return CN[s[0]]*10;
+  if(/^[一二三四五六七八九]十[一二三四五六七八九]$/.test(s))return CN[s[0]]*10+CN[s[2]];
+  if(/^[零一二两三四五六七八九]$/.test(s))return CN[s];
+  return null;
+}
+function parseTime(s){
+  let m=s.match(/(上午|下午|中午|晚上|傍晚|凌晨|早上|早晨)?\s*(\d{1,2})\s*[:：]\s*(\d{2})/);
+  if(m&&+m[2]<24)return fixHour(+m[2],m[1])+':'+m[3];
+  m=s.match(/(上午|下午|中午|晚上|傍晚|凌晨|早上|早晨)?\s*(\d{1,2}|[零一二两三四五六七八九十]{1,3})\s*[点時时]\s*(半|\d{1,2}|[零一二三四五六七八九十]{1,3})?/);
+  if(m){
+    let hh=cnNum(m[2]);if(hh==null||hh>24)return null;
+    let mm=0;if(m[3]==='半')mm=30;else if(m[3]){const v=cnNum(m[3]);if(v!=null)mm=v}
+    return fixHour(hh,m[1])+':'+pad(Math.min(mm,59));
+  }
+  return null;
+}
+function fixHour(hh,pre){
+  if(!pre)return pad(hh);
+  if(/下午|晚上|傍晚/.test(pre)&&hh<12)hh+=12;
+  if(pre==='中午'&&hh<11)hh+=12;
+  if(pre==='凌晨'&&hh===12)hh=0;
+  if(hh>=24)hh=hh%24;
+  return pad(hh);
+}
+function parseText(txt,mode){
+  const lines=String(txt||'').split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+  const out=[];
+  lines.forEach(L=>{
+    if(/^[-*·•\d.、)）]+\s*/.test(L)&&L.replace(/[\s|,，、-]/g,'').length<3)return;
+    const body=L.replace(/^[-*·•]+\s*/,'').replace(/^\d+[.、)）]\s*/,'').trim();
+    if(!body)return;
+    const date=parseDate(body)||mode.fallbackDate||'';
+    const time=parseTime(body)||'';
+    // 「重要 / 急 / 一般 / 不着急」这类词顺手变成优先级
+    let pri='';
+    if(/(十万火急|非常急|特别急|马上|立刻|紧急|火烧眉毛)/.test(body))pri='p0';
+    else if(/(重要|要紧|关键|必须)/.test(body))pri='p1';
+    else if(/(不急|随时|有空|看情况)/.test(body))pri='p3';
+    else pri='p2';
+    let title=body;
+    title=title.replace(/(今天|今日|明天|明日|后天)/g,'');
+    title=title.replace(/(这|本|下)?\s*(?:周|星期|礼拜)\s*[一二三四五六日天]\s*(前|之前|截止)?/g,'');
+    title=title.replace(/（\s*）/g,'').replace(/\(\s*\)/g,'').replace(/【\s*】/g,'');
+    title=title.replace(/(十万火急|非常急|特别急|火烧眉毛|紧急|重要|要紧|关键|不急|随时)/g,'');
+    title=title.replace(/\d{1,2}\s*[:：]\s*\d{2}\s*[-–—~至到]\s*\d{1,2}\s*[:：]\s*\d{2}/g,'');
+    title=title.replace(/(上午|下午|中午|晚上|傍晚|凌晨|早上|早晨)?\s*\d{1,2}\s*[:：]\s*\d{2}/g,'');
+    title=title.replace(/20\d{2}\s*[-\/.年]\s*\d{1,2}\s*[-\/.月]\s*\d{1,2}\s*[日号]?/g,'');
+    title=title.replace(/\d{1,2}\s*[-\/.]\s*\d{1,2}(?!\d|:)/g,'');
+    title=title.replace(/\d{1,2}\s*月\s*\d{1,2}\s*[日号]?/g,'');
+    title=title.replace(/\d{1,2}\s*[号日](?![0-9:：])/g,'');
+    title=title.replace(/(上午|下午|中午|晚上|傍晚|凌晨|早上|早晨)?\s*(\d{1,2}|[零一二两三四五六七八九十]{1,3})\s*[点時时]\s*(半|\d{1,2}|[零一二三四五六七八九十]{1,3})?\s*(前|之前)?/g,'');
+    title=title.replace(/(截止日期|截止时间|截止|deadline)\s*[:：]?/gi,'');
+    title=title.replace(/^\s*(前|之前|截止)\s*/,'').replace(/\s{2,}/g,' ').trim();
+    title=title.replace(/\s{2,}/g,' ');
+    title=title.replace(/^[\s,，、:：|\-—~至到]+|[\s,，、:：|\-—~至到]+$/g,'');
+    title=title.replace(/（\s*）/g,'').replace(/\(\s*\)/g,'').replace(/【\s*】/g,'').trim();
+    if(!title)title=body.replace(/（\s*）/g,'').replace(/\(\s*\)/g,'').trim();
+    out.push({date,time,title:title||body,cat:'其他',pri});
+  });
+  return out;
+}
+/* ============ 图片识别（可配置的视觉大模型） ============ */
+const AI_PROVIDERS=[
+ {k:'qwen',n:'通义千问 qwen-vl',model:'qwen-vl-max',ep:'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
+  tip:'阿里云百炼控制台申请，形如 sk-xxx'},
+ {k:'zhipu',n:'智谱 GLM-4V',model:'glm-4v-flash',ep:'https://open.bigmodel.cn/api/paas/v4/chat/completions',
+  tip:'智谱开放平台申请，形如 xxxxx.xxxxx'},
+ {k:'openai',n:'OpenAI 兼容接口',model:'gpt-4o-mini',ep:'https://api.openai.com/v1/chat/completions',
+  tip:'任何兼容 OpenAI 格式、支持图片的服务'},
+ {k:'custom',n:'自定义',model:'',ep:'',tip:'自己填接口地址'}
+];
+function aiCfg(){return S.aiProf||{}}
+function aiReady(){const c=aiCfg();return !!(c.key&&String(c.key).trim())}
+const OCR_PROMPT='请把这张图片里的文字和条目完整识别出来，用于整理成日程或待办。要求：\n1. 一行一条，不要表格、不要编号以外的解释；\n2. 每条尽量带上日期和时间（如 2026-11-15 18:30），没有就只写内容；\n3. 原文是什么字就写什么字，不要改写、不要总结；\n4. 如果图里是作业要求，把要求原文也逐行输出。\n只输出识别结果，不要任何开场白。';
+async function aiRecognize(dataUrl){
+  const c=aiCfg();
+  if(!c.key)throw new Error('还没填 API Key');
+  const p=AI_PROVIDERS.find(x=>x.k===(c.provider||'qwen'))||AI_PROVIDERS[0];
+  const url=(c.endpoint&&c.endpoint.trim())||p.ep;
+  const model=(c.model&&c.model.trim())||p.model;
+  if(!url||!model)throw new Error('接口地址或模型没填');
+  const body={
+    model,
+    messages:[{role:'user',content:[
+      {type:'image_url',image_url:{url:dataUrl}},
+      {type:'text',text:OCR_PROMPT}
+    ]}],
+    temperature:0.1
+  };
+  const resp=await fetch(url,{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+c.key.trim()},
+    body:JSON.stringify(body)
+  });
+  if(!resp.ok){
+    let t='';try{t=await resp.text()}catch(e){}
+    throw new Error('识别失败（'+resp.status+'）'+(t?': '+t.slice(0,160):''));
+  }
+  const j=await resp.json();
+  const txt=(j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content)||'';
+  if(!txt)throw new Error('接口没返回内容');
+  return String(txt).replace(/```[a-z]*\n?/gi,'').trim();
+}
+function readImageFile(file){
+  return new Promise((res,rej)=>{
+    if(!file||!/^image\//.test(file.type)){rej(new Error('不是图片文件'));return}
+    if(file.size>6*1024*1024){rej(new Error('图片太大了（超过 6MB），先裁一下或压缩'));return}
+    const r=new FileReader();
+    r.onload=()=>res(r.result);
+    r.onerror=()=>rej(new Error('图片读不出来'));
+    r.readAsDataURL(file);
+  });
+}
+
+/* 把图片压到 size×size（正方形居中裁切）再转 dataURL，避免 localStorage 撑爆 */
+function shrinkImage(file,size){
+  return new Promise((res,rej)=>{
+    if(!file||!/^image\//.test(file.type)){rej(new Error('不是图片文件'));return}
+    if(file.size>12*1024*1024){rej(new Error('图片太大了（超过 12MB），先压缩一下'));return}
+    const fr=new FileReader();
+    fr.onerror=()=>rej(new Error('图片读不出来'));
+    fr.onload=()=>{
+      const img=new Image();
+      img.onerror=()=>rej(new Error('这个格式浏览器打不开，换 JPG / PNG 试试'));
+      img.onload=()=>{
+        try{
+          const cv=document.createElement('canvas');cv.width=size;cv.height=size;
+          const g=cv.getContext('2d');
+          if(!g){rej(new Error('浏览器不支持压缩图片'));return}
+          const s=Math.min(img.width,img.height)||1;
+          g.drawImage(img,(size-img.width*(size/s))/2,(size-img.height*(size/s))/2,img.width*(size/s),img.height*(size/s));
+          res(cv.toDataURL('image/jpeg',0.86));
+        }catch(err){rej(err)}
+      };
+      img.src=fr.result;
+    };
+    fr.readAsDataURL(file);
+  });
+}
+
+/* ============ 内嵌导入框（每个板块里各有一份） ============ */
+const IMP_PH={
+ event:'例：\n2026-11-15 18:30 非线性编辑 提交截止\n11月20日 下午3点 期末答辩\n12月1日 前 交论文',
+ task:'例：\n找参考片 11月16日\n导出成片 11月15日 18:00\n问老师命名规范',
+ hw:'把学习通作业要求整段粘进来，会自动提取截止时间'
+};
+function importBox(mode,hint){
+  const box=window._impBox||{},txt=box.mode===mode?box.text:'',prev=box.mode===mode?box.prev:[];
+  const img=box.img&&box.mode===mode?box.img:null;
+  const pri=(box.pri&&box.mode===mode)?box.pri:'p1';
+  return `
+  <div class="impbox" data-mode="${mode}">
+    <div class="imp-head">
+      <b>📥 直接粘进来 / 传张图</b>
+      <span class="muted">${esc(hint||'')}</span>
+      <button class="btn ghost sm" data-act="impToggle" data-mode="${mode}">展开</button>
+    </div>
+    <div class="imp-body" style="display:none">
+      <div class="imp-drop" data-drop="${mode}">
+        <textarea class="inp" id="imp_${mode}" rows="4" placeholder="${esc(IMP_PH[mode]||'')}">${esc(txt)}</textarea>
+        <div class="imp-imgrow">
+          <label class="btn ghost sm" style="cursor:pointer">📷 选图片<input type="file" accept="image/*" data-img="${mode}" hidden></label>
+          <span class="muted">也可以把截图直接拖到上面的框里，或在那里 Ctrl+V 粘贴</span>
+        </div>
+        ${img?`<div class="imp-prev"><img src="${esc(img)}" alt="待识别图片"><button class="x" data-act="impClearImg" data-mode="${mode}" title="移除">×</button></div>`:''}
+      </div>
+      <div class="form-row" style="margin-top:11px">
+        <div style="flex:0 0 150px"><label class="f">没写日期就当</label><input class="inp" type="date" data-impfb="${mode}" value="${esc(box.mode===mode&&box.fb?box.fb:today())}"></div>
+        <div style="flex:0 0 130px"><label class="f">优先级</label><select class="inp" data-imppri="${mode}">${PRI.map(p=>`<option value="${p.k}" ${pri===p.k?'selected':''}>${p.n}</option>`).join('')}</select></div>
+        <div style="flex:0 0 auto"><button class="btn ghost" data-act="impSample" data-mode="${mode}">看例子</button></div>
+        ${img?`<div style="flex:0 0 auto"><button class="btn" data-act="impOcr" data-mode="${mode}">🔍 ${t('识别图片')}</button></div>`:''}
+        <div style="flex:0 0 auto"><button class="btn" data-act="impParse" data-mode="${mode}">识别文字</button></div>
+      </div>
+      <div class="note">支持：2026-11-15 / 11月15日 / 15号 / 明天 / 周三 / 18:30 / 下午3点 / 三点半。图片识别需要先在「⚙️ 设置 → 图片识别」里填一次 API Key。</div>
+      ${prev.length?`<div class="imp-res">
+        <div class="imp-res-h">${t('识别到 ')}${prev.length}${t(' 条，改完点导入')}</div>
+        ${prev.map((x,i)=>`
+        <div class="imp-row">
+          <input class="inp" data-pd="date" data-i="${i}" type="date" value="${esc(x.date||today())}">
+          <input class="inp" data-pd="time" data-i="${i}" type="time" value="${esc(x.time||'')}">
+          <input class="inp" style="flex:1;min-width:130px" data-pd="title" data-i="${i}" value="${esc(x.title||'')}">
+          <button class="x" data-act="impDel" data-i="${i}" title="移除">×</button>
+        </div>`).join('')}
+        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+          <button class="btn sm" data-act="impCommit" data-mode="${mode}">${t('全部导入（')}${prev.length}${t(' 条）')}</button>
+          <button class="btn ghost sm" data-act="impClear" data-mode="${mode}">清空</button>
+        </div>
+      </div>`:''}
+    </div>
+  </div>`;
+}
+
+/* 日程按天分组：今天 / 明天 / 后天 / 之后每天单独一组（带星期几）/ 已过期 */
+function evGroups(){
+  const d0=today(),now=new Date();
+  const d1=ymd(new Date(now.getTime()+86400000));
+  const d2=ymd(new Date(now.getTime()+2*86400000));
+  const days=[];
+  S.events.forEach(e=>{
+    const k=e.date||'';
+    if(k&&!days.find(x=>x.d===k))days.push({d:k});
+  });
+  days.sort((a,b)=>a.d.localeCompare(b.d));
+  const later=days.filter(x=>x.d>d2).map(x=>x.d);
+  const out=[
+    {d:d0,k:'今天'},
+    {d:d1,k:'明天'},
+    {d:d2,k:'后天'}
+  ].map(g=>({...g,list:S.events.filter(e=>e.date===g.d)}));
+  // 之后每一天单独一组
+  later.forEach(ds=>out.push({d:ds,k:dayLabel(ds),list:S.events.filter(e=>e.date===ds)}));
+  // 没有日期的
+  const none=S.events.filter(e=>!e.date);
+  if(none.length)out.push({d:'',k:'待定日期',list:none});
+  // 过期的放最后
+  const past=days.filter(x=>x.d&&x.d<d0).map(x=>x.d);
+  past.forEach(ds=>out.push({d:ds,k:dayLabel(ds),past:true,list:S.events.filter(e=>e.date===ds)}));
+  return out;
+}
+/* 日期 → 「11月17日 周一」 */
+function dayLabel(ds){
+  if(!ds)return '';
+  const p=ds.split('-');if(p.length<3)return ds;
+  const dt=new Date(+p[0],+p[1]-1,+p[2]);
+  const LC=curLang();
+  const wk=LC==='zh'?['周日','周一','周二','周三','周四','周五','周六']
+    :LC==='ja'?['日曜','月曜','火曜','水曜','木曜','金曜','土曜']
+    :LC==='ko'?['일','월','화','수','목','금','토']
+    :['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const md=LC==='zh'?(+p[1])+'月'+(+p[2])+'日'
+    :LC==='ja'?(+p[1])+'月'+(+p[2])+'日'
+    :LC==='ko'?(+p[1])+'월 '+(+p[2])+'일'
+    :['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+p[1]-1]+' '+p[2];
+  return md+' '+wk[dt.getDay()];
+}
+/* ============ 日程 ============ */
+function vCal(){
+  const d=today();
+  const sorted=[...S.events].sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
+  const groups=evGroups();
+  return `
+  <div class="card">
+    <h2>📅 日程安排</h2>
+    <div class="sub">课程、作业、生活都放这儿，做完打个勾</div>
+    <form data-form="addEvt" class="form-row">
+      <div class="w"><label class="f">要做什么</label><input class="inp" name="title" placeholder="例如：剪第三期、交作业、和妈妈视频…" required></div>
+      <div style="flex:0 0 145px"><label class="f">日期</label><input class="inp" name="date" type="date" value="${d}" required></div>
+      <div style="flex:0 0 110px"><label class="f">时间</label><input class="inp" name="time" type="time" value="20:00"></div>
+      <div style="flex:0 0 105px"><label class="f">分类</label><select class="inp" name="cat"><option>课程</option><option>作业</option><option>生活</option><option>其他</option></select></div>
+      <div style="flex:0 0 112px"><label class="f">紧急程度</label><select class="inp" name="pri">${PRI.map(p=>`<option value="${p.k}" ${p.k==='p1'?'selected':''}>${p.n}</option>`).join('')}</select></div>
+      <div style="flex:0 0 auto"><button class="btn" type="submit">添加日程</button></div>
+    </form>
+    ${importBox('event','从学习通、微信、课程表里整段复制过来')}
+  </div>
+  <div class="card" style="margin-top:18px">
+    <h2>${t('全部日程')} <span class="tag">${S.events.filter(e=>!e.done).length}${t(' 项待办')}</span></h2>
+    <div class="sub">按时间排好了，过期的也会留在下面，方便回头看</div>
+    ${S.events.length?groups.map(g=>{
+      const list=g.list.slice().sort((a,b)=>(a.time||'99:99').localeCompare(b.time||'99:99'));if(!list.length)return '';
+      const key=g.past?'':(g.k==='今天'||g.k==='明天'||g.k==='后天'||g.k==='待定日期'?g.k:'');
+      const head=(key?t(key):g.k)+(g.past?' · '+t('已过期'):'');
+      return `<div class="daygrp ${g.k==='今天'?'today':''}"><h4>${head} · ${list.length}</h4>${list.map(e=>`
+        <div class="evt ${e.done?'done':''} ${(!e.done&&(e.cat==='作业'||e.pri==='p0')&&!g.past)?'urgent':''}">
+          <input type="checkbox" data-chg="evt" data-id="${e.id}" ${e.done?'checked':''}>
+          <span class="tm">${esc(e.time||t('全天'))}</span>
+          ${priBadge(e.pri)}
+          <span class="ti">${esc(e.title)}</span>
+          <select class="minisel" data-pri="evt" data-id="${e.id}">${PRI.map(p=>`<option value="${p.k}" ${e.pri===p.k?'selected':''}>${p.n}</option>`).join('')}</select>
+          <span class="cat">${esc(e.cat)}</span>
+          <button class="x" data-act="delEvt" data-id="${e.id}" title="删除">×</button>
+        </div>`).join('')}</div>`;
+    }).join(''):'<div class="empty">还没有日程，上面加一条吧</div>'}
+  </div>`;
+}
+
+/* ============ 常用网站 ============ */
+function vSite(){
+  const ed=editSiteId?S.sites.find(s=>s.id===editSiteId):null;
+  const cats=['全部','学习','素材','工具','其他'];
+  const list=S.sites.map((s,i)=>({s,i})).filter(({s})=>siteFilter==='全部'||s.cat===siteFilter);
+  return `
+  <div class="card">
+    <h2>🌐 ${t('常用网站')} <span class="tag">${S.sites.length}${t(' 个')}</span></h2>
+    <div class="sub">${ed?t('正在修改这个网站，改完点「保存修改」'):t('把喜欢的网站加进来，点「打开」会在新标签页跳转')}</div>
+    <form data-form="site" class="form-row">
+      <div><label class="f">网站名称</label><input class="inp" name="name" value="${esc(ed?ed.name:'')}" placeholder="例如：学习通" required></div>
+      <div class="w"><label class="f">网址</label><input class="inp" name="url" value="${esc(ed?ed.url:'')}" placeholder="直接粘贴网址，不带 https:// 也行" required></div>
+      <div style="flex:0 0 105px"><label class="f">分类</label><select class="inp" name="cat">${['学习','素材','工具','其他'].map(c=>`<option ${ed&&ed.cat===c?'selected':''}>${c}</option>`).join('')}</select></div>
+      <div class="w"><label class="f">备注（可不填）</label><input class="inp" name="note" value="${esc(ed?ed.note:'')}" placeholder="这个网站用来干嘛"></div>
+      <div style="flex:0 0 auto;display:flex;gap:6px"><button class="btn" type="submit">${ed?t('保存修改'):t('添加网站')}</button>${ed?'<button class="btn ghost" type="button" data-act="cancelEdit">取消</button>':''}</div>
+    </form>
+    <div class="note">${t('网址只支持 http / https；网址、名称、备注都只存在这台电脑上，不会上传到任何地方。')}</div>
+  </div>
+  <div class="card" style="margin-top:18px">
+    <h2>${t('我的收藏')} <span class="tag g">${list.length}${t(' 个')}</span></h2>
+    <div class="sub">点卡片上的「打开」直接跳转</div>
+    <div class="chips">${cats.map(c=>`<button class="chip ${siteFilter===c?'on':''}" data-act="sFilter" data-v="${c}">${c}</button>`).join('')}</div>
+    ${list.length?`<div class="sites">${list.map(({s,i})=>{const c=ico(s.name,i);return `
+      <div class="site">
+        <div class="top"><span class="site-ico" style="background:${c.bg}">${esc(c.ch)}</span><div style="min-width:0"><div class="nm">${esc(s.name)}</div><div class="ur">${esc(s.url)}</div></div></div>
+        <div class="nt">${esc(s.note||'')} <span class="tag">${esc(s.cat)}</span></div>
+        <div class="ops">
+          <a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">打开 ↗</a>
+          <button data-act="editSite" data-id="${s.id}">编辑</button>
+          <button class="rm" data-act="delSite" data-id="${s.id}">删除</button>
+        </div>
+      </div>`}).join('')}</div>`:'<div class="empty" style="margin-top:14px">这一类还没有网站，用上面的表单加一个吧</div>'}
+  </div>`;
+}
+
+/* ============ 记账 ============ */
+const CAT_OUT=['吃饭','交通','学习','购物','娱乐','住宿','人情','其他'];
+const CAT_IN=['生活费','兼职','红包','奖学金','其他'];
+function thisMonth(){const d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)}
+function fmt(n){return (Math.round((Number(n)||0)*100)/100).toFixed(2).replace(/\.00$/,'')}
+function billMonth(list,ym){
+  let out=0,inn=0;
+  list.forEach(b=>{if(String(b.date||'').slice(0,7)!==ym)return;(b.type==='in'?inn+=+b.amt||0:out+=+b.amt||0)});
+  return {out,inn};
+}
+/* 年账单：返回该年每月的收支 + 合计 */
+function billYear(list,y){
+  const months=[];
+  for(let i=1;i<=12;i++){
+    const ym=y+'-'+pad(i);
+    const r=billMonth(list,ym);
+    months.push({ym,m:i,out:r.out,inn:r.inn});
+  }
+  const total={out:0,inn:0};
+  months.forEach(x=>{total.out+=x.out;total.inn+=x.inn});
+  return {y,months,total};
+}
+/* 从某个月往前/往后挪 n 个月 */
+function shiftMonth(ym,n){
+  const [y,m]=String(ym).split('-').map(Number);
+  const d=new Date(y,(m-1)+n,1);
+  return d.getFullYear()+'-'+pad(d.getMonth()+1);
+}
+function thisYear(){return new Date().getFullYear()}
+/* 该记账数据里最早最晚的月份区间 */
+function billRange(list){
+  const ys=list.map(b=>String(b.date||'').slice(0,7)).filter(x=>x.length===7).sort();
+  return ys.length?{min:ys[0],max:ys[ys.length-1]}:null;
+}
+/* 导出一段流水为 CSV（Excel / WPS 直接能打开） */
+function billCsv(list,title){
+  const head=['日期','类型','分类','金额','备注'];
+  const rows=list.slice().sort((a,b)=>String(a.date).localeCompare(String(b.date)))
+    .map(b=>[b.date,b.type==='in'?'收入':'支出',b.cat,(b.type==='in'?'':'-')+fmt(b.amt),b.note||'']);
+  const q=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
+  const csv=[head].concat(rows).map(r=>r.map(q).join(',')).join('\r\n');
+  return '\ufeff'+csv;   // BOM，Excel 打开中文不乱码
+}
+function download(name,content,type){
+  const blob=new Blob([content],{type:type||'text/plain;charset=utf-8'});
+  const u=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=u;a.download=name;a.click();
+  setTimeout(()=>URL.revokeObjectURL(u),1500);
+}
+function vBill(){
+  const all=S.bills||[];
+  const rng=billRange(all);
+  const mode=billMode==='year'?'year':'month';           // 月视图 / 年视图
+  const ym=billMonthFilter||thisMonth();
+  const y=billYearFilter||thisYear();
+
+  /* —— 顶部：视图切换 + 时间切换 + 导出 —— */
+  const timeNav=mode==='month'?`
+    <div class="timenav">
+      <button class="tn-btn" data-act="billShift" data-v="-1" title="上一月">‹</button>
+      <div class="tn-cur">
+        <input type="month" class="tn-pick" id="billMonthPick" value="${ym}" max="9999-12">
+        <span class="tn-sub">${monthSpan(ym)}</span>
+      </div>
+      <button class="tn-btn" data-act="billShift" data-v="1" title="下一月">›</button>
+      <button class="btn ghost sm" data-act="billReset">回到本月</button>
+    </div>`:`
+    <div class="timenav">
+      <button class="tn-btn" data-act="yearShift" data-v="-1" title="上一年">‹</button>
+      <div class="tn-cur">
+        <input type="number" class="tn-pick" id="billYearPick" value="${y}" min="1970" max="2999">
+        <span class="tn-sub">${t('1月 — 12月')}</span>
+      </div>
+      <button class="tn-btn" data-act="yearShift" data-v="1" title="下一年">›</button>
+      <button class="btn ghost sm" data-act="billReset">回到今年</button>
+    </div>`;
+
+  const head=`
+  <div class="card">
+    <h2>📊 ${t('账单')} <span class="tag">${mode==='month'?t('按月'):t('按年')}</span></h2>
+    <div class="seg" style="margin-bottom:14px">
+      <button class="seg-b ${mode==='month'?'on':''}" data-act="billMode" data-v="month">月账单</button>
+      <button class="seg-b ${mode==='year'?'on':''}" data-act="billMode" data-v="year">年账单</button>
+    </div>
+    ${timeNav}
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
+      <button class="btn ghost sm" data-act="billExport" data-v="csv">⬇ ${t('导出')} ${ym}${t('月')} ${t('明细（Excel）')}</button>
+      <button class="btn ghost sm" data-act="billExport" data-v="json">⬇ ${t('导出备份（JSON）')}</button>
+      <button class="btn ghost sm" data-act="billPrint">🖨 ${t('打印 / 存 PDF')}</button>
+    </div>
+  </div>`;
+
+  /* —— 月视图 —— */
+  let main='';
+  if(mode==='month'){
+    const list=all.filter(b=>String(b.date||'').slice(0,7)===ym).sort((a,b)=>b.date.localeCompare(a.date));
+    const m=billMonth(all,ym);
+    const catSum={};
+    list.forEach(b=>{if(b.type!=='in')catSum[b.cat]=(catSum[b.cat]||0)+(+b.amt||0)});
+    const totalOut=Object.values(catSum).reduce((a,b)=>a+b,0);
+    const catArr=Object.entries(catSum).sort((a,b)=>b[1]-a[1]);
+    const dayIn=list.filter(b=>b.type==='in').reduce((a,b)=>a+(+b.amt||0),0);
+    const dayCnt=list.length;
+    main=`
+    <div class="card" style="margin-top:18px">
+      <h2>${ym}${t(' 月度小结')}</h2>
+      <div class="billsum">
+        <div><small>支出</small><b class="out">¥${fmt(m.out)}</b></div>
+        <div><small>收入</small><b class="in">¥${fmt(m.inn)}</b></div>
+        <div><small>结余</small><b>¥${fmt(m.inn-m.out)}</b></div>
+      </div>
+      <div class="billmeta">${t('共 ')}${dayCnt}${t(' 笔 · 平均每天支出 ')}¥${fmt(dayCnt?m.out/30:0)}</div>
+      ${catArr.length?`<div class="catbars">${catArr.map(([k,v])=>{
+        const p=totalOut?Math.round(v/totalOut*100):0;
+        return `<div class="cbar"><span class="cn">${esc(k)}</span><span class="cbar-bg"><i style="width:${p}%"></i></span><span class="cv">¥${fmt(v)} · ${p}%</span></div>`;
+      }).join('')}</div>`:''}
+    </div>
+    <div class="card" style="margin-top:18px">
+      <h2>🧾 ${t('流水')} <span class="tag">${list.length}${t(' 笔')}</span></h2>
+      <div class="sub">从近到远，点 × 可以删掉记错的</div>
+      ${list.length?`<div class="bills">${list.map(b=>`
+        <div class="bill">
+          <span class="bd">${esc(String(b.date).slice(5))}</span>
+          <span class="bc">${esc(b.cat)}</span>
+          <span class="bn">${esc(b.note||'')}</span>
+          <b class="ba ${b.type==='in'?'in':'out'}">${b.type==='in'?'+':'-'}¥${fmt(b.amt)}</b>
+          <button class="x" data-act="delBill" data-id="${b.id}" title="删除">×</button>
+        </div>`).join('')}</div>`:'<div class="empty" style="margin-top:14px">这个月还没记账</div>'}
+    </div>`;
+  }else{
+    /* —— 年视图 —— */
+    const yr=billYear(all,y);
+    const maxV=Math.max(1,...yr.months.map(x=>Math.max(x.out,x.inn)));
+    const catYear={};
+    all.forEach(b=>{if(String(b.date||'').slice(0,4)!==String(y))return;if(b.type==='in')return;catYear[b.cat]=(catYear[b.cat]||0)+(+b.amt||0)});
+    const yTotalOut=Object.values(catYear).reduce((a,b)=>a+b,0);
+    const catArrY=Object.entries(catYear).sort((a,b)=>b[1]-a[1]);
+    main=`
+    <div class="card" style="margin-top:18px">
+      <h2>${y}${t(' 年度小结')}</h2>
+      <div class="billsum">
+        <div><small>全年支出</small><b class="out">¥${fmt(yr.total.out)}</b></div>
+        <div><small>全年收入</small><b class="in">¥${fmt(yr.total.inn)}</b></div>
+        <div><small>净结余</small><b>¥${fmt(yr.total.inn-yr.total.out)}</b></div>
+      </div>
+      <div class="billmeta">${t('月均支出')} ¥${fmt(yr.total.out/12)} · ${t('平均每月')} ${fmt(all.filter(b=>String(b.date||'').slice(0,4)===String(y)).length/12)} ${t('笔')}</div>
+      <div class="ybar" style="margin-top:18px">
+        ${yr.months.map(x=>{
+          const hi=Math.max(x.out,x.inn)===0?'':(x.out>=x.inn?'hot':'cool');
+          return `<button class="ybar-col" data-act="billJump" data-v="${x.ym}" title="${x.ym} 支出 ¥${fmt(x.out)} / 收入 ¥${fmt(x.inn)}">
+            <span class="ybars">
+              <i class="bo" style="height:${Math.round(x.out/maxV*100)}%"></i>
+              <i class="bi" style="height:${Math.round(x.inn/maxV*100)}%"></i>
+            </span>
+            <span class="ym">${x.m}</span>
+          </button>`}).join('')}
+      </div>
+      <div class="barlegend"><span><i class="bo"></i>支出</span><span><i class="bi"></i>收入</span><span class="muted">点某个月可以跳进月账单</span></div>
+      ${catArrY.length?`<div class="catbars">${catArrY.map(([k,v])=>{
+        const p=yTotalOut?Math.round(v/yTotalOut*100):0;
+        return `<div class="cbar"><span class="cn">${esc(k)}</span><span class="cbar-bg"><i style="width:${p}%"></i></span><span class="cv">¥${fmt(v)} · ${p}%</span></div>`;
+      }).join('')}</div>`:''}
+    </div>
+    <div class="card" style="margin-top:18px">
+      <h2>📅 ${t('每月明细')}</h2>
+      <div class="sub">哪个月花得多，一眼就看出来</div>
+      <div class="mtab">
+        <div class="mtab-h"><span>月份</span><span>支出</span><span>收入</span><span>结余</span></div>
+        ${yr.months.map(x=>{
+          const empty=x.out===0&&x.inn===0;
+          return `<button class="mtab-r ${empty?'empty':''}" data-act="billJump" data-v="${x.ym}">
+            <span>${x.m}${t(' 月')}</span><span class="out">${x.out?'¥'+fmt(x.out):'—'}</span><span class="in">${x.inn?'¥'+fmt(x.inn):'—'}</span>
+            <span>${empty?'—':'¥'+fmt(x.inn-x.out)}</span></button>`}).join('')}
+      </div>
+    </div>`;
+  }
+
+  /* —— 记一笔 —— */
+  const addCard=`
+  <div class="card" style="margin-top:18px">
+    <h2>💰 ${t('记一笔')}</h2>
+    <div class="sub">花了多少、进了多少，随手记下就好</div>
+    <form data-form="addBill" class="form-row">
+      <div style="flex:0 0 132px"><label class="f">收 / 支</label>
+        <select class="inp" name="type" id="billType"><option value="out">支出</option><option value="in">收入</option></select></div>
+      <div style="flex:0 0 130px"><label class="f">金额（元）</label><input class="inp" name="amt" type="number" step="0.01" min="0" placeholder="0.00" required></div>
+      <div style="flex:0 0 125px"><label class="f">分类</label><select class="inp" name="cat">${CAT_OUT.map(c=>`<option>${c}</option>`).join('')}</select></div>
+      <div style="flex:0 0 150px"><label class="f">日期</label><input class="inp" name="date" type="date" value="${today()}" required></div>
+      <div class="w"><label class="f">备注（可不填）</label><input class="inp" name="note" placeholder="午饭、买书、打印…"></div>
+      <div style="flex:0 0 auto"><button class="btn" type="submit">记下</button></div>
+    </form>
+    <div class="note">小提示：选「收入」时分类会自动换成生活费 / 兼职那一组。</div>
+  </div>`;
+  return head+main+addCard;
+}
+/* 「2026-11」→「11月1日 — 11月30日」 */
+function monthSpan(ym){
+  const [y,m]=ym.split('-').map(Number);
+  const last=new Date(y,m,0).getDate();
+  const d=t('日');
+  return `${m}${t('月')}1${d} — ${m}${t('月')}${last}${d}`;
+}
+
+/* ============ 外观设置 ============ */
+/* 头像 HTML：图片 / emoji / 名字首字 三态 */
+function avHtml(a,who,size){
+  const s=size?`width:${size}px;height:${size}px;border-radius:${Math.round(size*0.32)}px;font-size:${Math.round(size*0.44)}px;`:'';
+  if(a&&a.k==='img'&&a.v)return `<span class="avatar" style="${s}overflow:hidden"><img src="${esc(a.v)}" alt=""></span>`;
+  if(a&&a.k==='emoji'&&a.v)return `<span class="avatar emoji" style="${s}">${esc(a.v)}</span>`;
+  return `<span class="avatar" style="${s}">${esc(String(who||'?').charAt(0))}</span>`;
+}
+/* 只取头像内容（不带外层），给账户列表的圆形小徽标用 */
+function avInner(a,who){
+  if(a&&a.k==='img'&&a.v)return `<img src="${esc(a.v)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+  if(a&&a.k==='emoji'&&a.v)return esc(a.v);
+  return esc(String(who||'?').charAt(0));
+}
+function vMe(){
+  const accs=accounts(),cur=P.user||'小玉';
+  const sw=themeKeys().concat(P.theme==='custom'?['custom']:[]).map(k=>{const t=(k==='custom'&&P.colors)?P.colors:THEMES[k];
+    return `<button class="sw ${P.theme===k?'on':''}" data-act="setTheme" data-k="${k}" title="${t.name}">
+      <i style="background:${t.brand}"></i><i style="background:${t.brand2}"></i><i style="background:${t.soft}"></i>
+      <span>${t.name}</span></button>`}).join('');
+  return `
+  <div class="card">
+    <h2>🖼️ 头像 <span class="tag">${P.avatar?(P.avatar.k==='img'?'自定义图片':'内置'):'名字首字'}</span></h2>
+    <div class="sub">挑一个内置的，或者传一张自己的照片——只影响你现在的账户</div>
+    <div class="avrow">
+      <div class="avbig" id="avBig">${avHtml(P.avatar,cur,64)}</div>
+      <div class="avact">
+        <button class="btn ghost sm" data-act="avPick">从内置里挑</button>
+        <label class="btn sm" style="cursor:pointer;display:inline-flex;align-items:center">📤 上传图片<input type="file" accept="image/*" id="avFile" hidden></label>
+        <button class="btn ghost sm" data-act="avDefault">用名字首字</button>
+      </div>
+    </div>
+    <div class="avpick" id="avPick" style="display:none">
+      ${AVATARS.map(e=>`<button class="avitem ${P.avatar&&P.avatar.k==='emoji'&&P.avatar.v===e?'on':''}" data-act="avEmoji" data-v="${e}">${e}</button>`).join('')}
+    </div>
+    <div class="note" style="margin-top:12px">上传的图片会缩到 160×160 存在这台电脑上，不会传到任何地方。文件太大或格式少见的（比如 HEIC）可能读不了，换张 JPG / PNG 就行。</div>
+  </div>
+  <div class="card" style="margin-top:18px">
+    <h2>🌏 ${t('界面语言')} <span class="tag">${LANGS.find(x=>x.k===curLang()).n}</span></h2>
+    <div class="sub">${t('选一个看得惯的语言，整页立刻换掉，只影响你自己的账户')}</div>
+    <div class="langpick">
+      ${LANGS.map(x=>`<button class="lbtn ${x.k===curLang()?'on':''}" data-act="lang" data-k="${x.k}">
+        <b>${x.n}</b><small>${x.k==='zh'?'简体中文':x.sub}</small></button>`).join('')}
+    </div>
+  </div>
+  <div class="card" style="margin-top:18px">
+    <h2>🤖 图片识别 <span class="tag ${aiReady()?'g':''}">${aiReady()?t('已配置'):t('未配置')}</span></h2>
+    <div class="sub">填一次就好，之后在日程 / 任务 / 作业里都能直接传截图识别</div>
+    <form data-form="aiCfg" class="form-row">
+      <div style="flex:0 0 180px"><label class="f">服务商</label>
+        <select class="inp" name="provider" id="aiProvider">
+          ${AI_PROVIDERS.map((p,i)=>`<option value="${p.k}" ${(aiCfg().provider||'qwen')===p.k?'selected':''}>${p.n}</option>`).join('')}
+        </select></div>
+      <div style="flex:0 0 200px"><label class="f">模型</label>
+        <input class="inp" name="model" value="${esc((aiCfg().model)||'')}" placeholder="留空用默认">
+      </div>
+      <div class="w"><label class="f">API Key（只存在这台电脑上）</label>
+        <input class="inp" name="key" type="password" value="${esc(aiCfg().key||'')}" placeholder="sk-...">
+      </div>
+      <div style="flex:0 0 auto"><button class="btn" type="submit">保存</button></div>
+    </form>
+    <div class="form-row" style="margin-top:10px">
+      <div class="w"><label class="f">接口地址（一般不用改，走代理时用）</label>
+        <input class="inp" name="endpoint" id="aiEndpoint" value="${esc(aiCfg().endpoint||'')}" placeholder="留空用服务商默认地址">
+      </div>
+    </div>
+    <div class="note">支持通义千问 qwen-vl（阿里云百炼）、智谱 GLM-4V、以及任何兼容 OpenAI 格式的多模态接口。<b>传图时图片会发给你选的服务商</b>，除此之外不会传给别处。没有 Key 也不影响别的功能——粘文字照样能用。</div>
+  </div>
+  <div class="card" style="margin-top:18px">
+    <h2>🎨 主题色 <span class="tag">每人各自保存</span></h2>    <div class="sub">挑一个顺眼的，改完立刻生效，只影响你自己的账户</div>
+    <div class="swatches">${sw}</div>
+    <div style="margin-top:16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <label class="toggle"><input type="checkbox" id="darkT" ${P.dark?'checked':''}><span></span>深色模式</label>
+      <span class="muted">晚上看屏幕更舒服，配色会自动跟着主题走</span>
+    </div>
+    <div class="note" style="margin-top:16px">想用别的颜色？点下面自己调一个（浏览器自带的取色器，选完直接生效）。</div>
+    <div class="form-row" style="margin-top:10px">
+      <div style="flex:0 0 auto"><label class="f">自定义主色</label><input type="color" id="customC" value="${(P.theme==='custom'&&P.colors?P.colors:THEMES[P.theme]||THEMES.green).brand}" style="width:70px;height:38px;border:1px solid var(--line);border-radius:9px;background:none;padding:2px;cursor:pointer"></div>
+      <div style="flex:0 0 auto"><button class="btn ghost" data-act="applyCustom">用这个色</button></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:18px">
+    <h2>🧑 ${t('账户')} <span class="tag">${accs.length}${t(' 个')}</span></h2>
+    <div class="sub">每个账户的作业、任务、日程、网站都是分开的，互不打扰</div>
+    <div class="accs">
+      ${accs.length?accs.map(a=>`<button class="acc ${a===cur?'on':''}" data-act="switchAcc" data-n="${esc(a)}">
+        <span class="av">${a===cur?avInner(P.avatar,a):esc(a.charAt(0))}</span>${esc(a)}${a===cur?'<small>当前</small>':''}</button>`).join(''):'<div class="empty" style="padding:14px">还没有其他账户</div>'}
+    </div>
+    <form data-form="addAcc" class="form-row" style="margin-top:14px">
+      <div class="w"><label class="f">新建账户</label><input class="inp" name="n" placeholder="输入名字，比如室友、同组同学" required></div>
+      <div style="flex:0 0 auto"><button class="btn" type="submit">创建并切换</button></div>
+    </form>
+    <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+      <button class="btn ghost sm" data-act="renameAcc">重命名当前账户</button>
+      <button class="btn ghost sm" data-act="delAcc">删除当前账户</button>
+    </div>
+    <div class="note">数据只在本浏览器里，换电脑或换浏览器都看不到。想带走/分享，用左侧「导出备份」，别人在他的浏览器里点「导入」就能用同一套内容。</div>
+  </div>
+  <div class="card" style="margin-top:18px">
+    <h2>🎁 把工作台发给别人</h2>
+    <div class="sub">这个文件本身就是完整程序，发给谁都能直接用</div>
+    <div class="note" style="margin-top:0">把这个 HTML 文件直接发给同学（微信、QQ 都行），他双击打开就能用。他可以在「⚙️ 设置」里挑自己的颜色、建自己的账户，数据存在他自己的电脑上，不会看到你的东西。</div>
+  </div>`;
+}
+
+/* ============ 内嵌导入：读写状态 ============ */
+function impState(mode){
+  window._impBox=window._impBox||{mode:null,text:'',prev:[],fb:today(),pri:'p1',img:null};
+  const b=window._impBox;
+  if(b.mode!==mode){b.mode=mode;b.text='';b.prev=[];b.fb=today();b.pri='p1';b.img=null}
+  return b;
+}
+function syncImp(){
+  const b=window._impBox;if(!b)return;
+  const t=b.mode?document.getElementById('imp_'+b.mode):null;
+  if(t)b.text=t.value;
+  const fb=b.mode?document.querySelector('[data-impfb="'+b.mode+'"]'):null;
+  if(fb)b.fb=fb.value;
+  const pr=b.mode?document.querySelector('[data-imppri="'+b.mode+'"]'):null;
+  if(pr)b.pri=pr.value;
+}
+function impParse(mode){
+  const b=impState(mode);syncImp();
+  const res=parseText(b.text,{fallbackDate:b.fb||today()});
+  if(!res.length){toast('没认出内容，一段一行再试试');return}
+  res.forEach(x=>{if(!x.pri)x.pri=b.pri||'p1'});
+  b.prev=res;save();render(true);
+  toast('认出 '+res.length+' 条，确认一下');
+}
+async function impOcr(mode,btn){
+  const b=impState(mode);syncImp();
+  if(!b.img){toast('先选一张图片');return}
+  if(!aiReady()){toast('还没填 API Key，去「设置 → 图片识别」填一下');S.tab='me';save();render();return}
+  const old=btn.textContent;btn.textContent='识别中…';btn.disabled=true;
+  try{
+    const txt=await aiRecognize(b.img);
+    b.text=((b.text||'').trim()?b.text.trim()+'\n':'')+txt;
+    const res=parseText(txt,{fallbackDate:b.fb||today()});
+    res.forEach(x=>{if(!x.pri)x.pri=b.pri||'p1'});
+    b.prev=res;save();render(true);
+    toast('图片识出 '+res.length+' 条');
+  }catch(err){
+    btn.textContent=old;btn.disabled=false;
+    toast(String(err.message||err).slice(0,80));
+    console.error(err);
+  }
+}
+function impCommit(mode){
+  const b=impState(mode);syncImp();
+  const list=b.prev||[];
+  if(!list.length)return;
+  if(mode==='hw'){
+    const first=list[0];
+    const dl=(first.date||today())+'T'+(first.time||'23:59');
+    const id=uid();
+    S.hws.push({id,title:first.title||'新作业',course:'未分类',score:'—',deadline:dl,pri:b.pri||'p1',
+      note:(b.text||'').trim(),
+      deliver:[{t:'作品 / 文件',done:false},{t:'说明文档',done:false}],
+      check:[{t:'命名规范核对',done:false},{t:'确认已点「提交」',done:false}]});
+    S.curHw=id;
+    S.events.push({id:uid(),date:first.date||today(),time:first.time||'',title:'提交：'+(first.title||'新作业'),cat:'作业',pri:b.pri||'p1',done:false});
+    b.prev=[];b.text='';b.img=null;save();S.tab='hw';render();toast('作业建好了，去勾清单');return;
+  }
+  let n=0;
+  list.forEach(x=>{
+    if(!String(x.title||'').trim())return;
+    if(mode==='task')S.tasks.push({id:uid(),t:x.title,cat:'其他',done:false,pri:x.pri||b.pri||'p1',due:x.date||'',ts:Date.now()});
+    else S.events.push({id:uid(),title:x.title,date:x.date||today(),time:x.time||'',cat:'其他',done:false,pri:x.pri||b.pri||'p1'});
+    n++;
+  });
+  b.prev=[];b.text='';b.img=null;save();
+  toast('导入了 '+n+' 条');
+  render(true);
+}
+
+/* ============ 渲染 ============ */
+function render(keep){
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.tab===S.tab));
+  document.getElementById('view').innerHTML=localizeHtml(({home:vHome,hw:vHw,task:vTask,cal:vCal,site:vSite,bill:vBill,me:vMe}[S.tab]||vHome)());
+  renderTop();
+  if(!keep)window.scrollTo({top:0,behavior:'smooth'});
+}
+/* 静态外壳（侧栏/导航/底部）跟着语言走 */
+function applyLang(){
+  const L=curLang();
+  const def=LANGS.find(x=>x.k===L)||LANGS[0];
+  document.documentElement.lang=def.html;
+  document.querySelectorAll('#nav .nl').forEach(el=>{el.textContent=t(el.dataset.k)});
+  const set=(id,k)=>{const e=document.getElementById(id);if(e)e.textContent=t(k)};
+  set('dataLbl','数据（存在这台电脑上）');
+  set('bExp','导出备份');set('bImp','导入');set('bRst','重置');
+  set('offlineTip','离线可用 · 关掉页面数据不丢');
+  const sel=document.getElementById('langSel');
+  if(sel){
+    const icon={'zh':'🇨🇳','en':'🇬🇧','ja':'🇯🇵','ko':'🇰🇷','es':'🇪🇸','fr':'🇫🇷'};
+    sel.innerHTML=LANGS.map(x=>`<option value="${x.k}" ${x.k===L?'selected':''}>${icon[x.k]||'🌏'} ${x.n}</option>`).join('');
+  }
+}
+
+/* ============ 交互 ============ */
+document.getElementById('nav').addEventListener('click',e=>{
+  const b=e.target.closest('[data-tab]');if(!b)return;
+  S.tab=b.dataset.tab;editSiteId=null;save();render();
+});
+document.addEventListener('click',e=>{
+  const el=e.target.closest('[data-act]');if(!el)return;
+  if(el.tagName==='BUTTON'&&el.closest('label'))e.preventDefault();
+  const a=el.dataset.act;
+  if(a==='go'){syncImp();S.tab=el.dataset.tab;editSiteId=null;save();render();return}
+  if(a==='lang'){setLang(el.dataset.k);return}
+  /* —— 头像 —— */
+  if(a==='avPick'){
+    const p=document.getElementById('avPick');
+    if(p){const open=p.style.display==='none';p.style.display=open?'flex':'none';}
+    return}
+  if(a==='avEmoji'){
+    P.avatar={k:'emoji',v:el.dataset.v};saveProf(P);renderUser();render(true);
+    toast('头像换好了');return}
+  if(a==='avDefault'){
+    P.avatar=null;saveProf(P);renderUser();render(true);
+    toast('改回名字首字了');return}
+  /* —— 内嵌导入框 —— */
+  if(a==='impToggle'){
+    const body=el.closest('.impbox').querySelector('.imp-body');
+    const open=body.style.display==='none';
+    body.style.display=open?'block':'none';
+    el.textContent=open?'收起':'展开';
+    if(open)setTimeout(()=>{const t=body.querySelector('textarea');if(t)t.focus()},60);
+    return}
+  if(a==='impSample'){
+    const m=el.dataset.mode;
+    const demo={event:'2026-11-15 18:30 非线性编辑 提交截止\n11月20日 下午3点 期末答辩\n11月25号 晚上八点 班会',
+                task:'找参考片 11月16日\n导出成片 11月15日 18:00\n问老师命名规范',
+                hw:'非线性编辑 创新创意作品 2026-11-15 18:30 提交截止'}[m];
+    const t=document.getElementById('imp_'+m);if(t){t.value=demo;syncImp()}
+    render(true);toast('例子填好了，点「识别文字」看看');return}
+  if(a==='impParse'){impParse(el.dataset.mode);return}
+  if(a==='impOcr'){impOcr(el.dataset.mode,el);return}
+  if(a==='impClearImg'){if(window._impBox)window._impBox.img=null;syncImp();save();render(true);return}
+  if(a==='impDel'){
+    const b=window._impBox||{};if(b.prev)b.prev.splice(+el.dataset.i,1);
+    syncImp();save();render(true);return}
+  if(a==='impClear'){if(window._impBox)window._impBox.prev=[];syncImp();save();render(true);return}
+  if(a==='impCommit'){impCommit(el.dataset.mode);return}
+  /* —— 记账 —— */
+  if(a==='delBill'){if(!confirm('删掉这笔记录？'))return;S.bills=S.bills.filter(x=>x.id!==el.dataset.id);save();render(true);return}
+  if(a==='billMonth'){billMonthFilter=el.dataset.v;billMode='month';render(true);return}
+  /* —— 月/年切换、翻页、导出 —— */
+  if(a==='billMode'){billMode=el.dataset.v;render(true);return}
+  if(a==='billShift'){billMonthFilter=shiftMonth(billMonthFilter||thisMonth(),+el.dataset.v);billMode='month';render(true);return}
+  if(a==='yearShift'){billYearFilter=(billYearFilter||thisYear())+(+el.dataset.v);billMode='year';render(true);return}
+  if(a==='billReset'){billMonthFilter=null;billYearFilter=null;render(true);return}
+  if(a==='billJump'){billMonthFilter=el.dataset.v;billMode='month';render(true);return}
+  if(a==='billExport'){
+    const all=S.bills||[];
+    if(!all.length){toast('还没有账单可以导出');return}
+    const mode=billMode==='year'?'year':'month';
+    if(mode==='month'){
+      const ym=billMonthFilter||thisMonth();
+      const list=all.filter(b=>String(b.date||'').slice(0,7)===ym);
+      if(!list.length){toast(ym+t(' 没有记录'));return}
+      if(el.dataset.v==='csv')download('账单_'+ym+'.csv',billCsv(list),'text/csv;charset=utf-8');
+      else download('账单_'+ym+'.json',JSON.stringify(list,null,2),'application/json');
+      toast('已导出 '+ym+' 的 '+list.length+' 笔');
+    }else{
+      const y=billYearFilter||thisYear();
+      const list=all.filter(b=>String(b.date||'').slice(0,4)===String(y));
+      if(!list.length){toast(y+t(' 年没有记录'));return}
+      if(el.dataset.v==='csv')download('账单_'+y+'年.csv',billCsv(list),'text/csv;charset=utf-8');
+      else download('账单_'+y+'年.json',JSON.stringify(list,null,2),'application/json');
+      toast('已导出 '+y+' 年共 '+list.length+' 笔');
+    }
+    return}
+  if(a==='billPrint'){window.print();return}
+  if(a==='copy'){copy(el.dataset.v);return}
+  if(a==='setTheme'){P.theme=el.dataset.k;P.colors=null;saveProf(P);applyTheme(P);render();toast('换成「'+THEMES[P.theme].name+'」了');return}
+  if(a==='applyCustom'){
+    const c=document.getElementById('customC').value;
+    P.theme='custom';P.colors=Object.assign({name:'自定义'},mixTheme(c));saveProf(P);applyTheme(P);render();toast('自定义颜色已生效');return}
+  if(a==='switchAcc'){switchUser(el.dataset.n);toast('切换到 '+el.dataset.n);return}
+  if(a==='renameAcc'){
+    const cur=P.user||'小玉',n=prompt('新的名字',cur);if(!n||!n.trim()||n.trim()===cur)return;
+    const nm=n.trim(),accs=accounts();
+    try{localStorage.setItem(KEY+'::'+nm,localStorage.getItem(dataKey())||'')}catch(e){}
+    const i=accs.indexOf(cur);if(i>=0)accs[i]=nm;else accs.push(nm);saveAccounts(accs);
+    try{localStorage.removeItem(dataKey())}catch(e){}
+    P.user=nm;saveProf(P);S=load();render();toast('改好了');return}
+  if(a==='delAcc'){
+    const cur=P.user||'小玉';
+    if(!confirm('删除账户「'+cur+'」以及它的全部内容？这个操作不能撤销，建议先导出备份。'))return;
+    try{localStorage.removeItem(KEY+'::'+cur)}catch(e){}
+    const accs=accounts().filter(x=>x!==cur);saveAccounts(accs);
+    switchUser(accs[0]||'小玉');toast('已删除');return}
+  if(a==='copyDraft'){const t=document.getElementById('draft');copy(t?t.value:'');return}
+  if(a==='resetDraft'){if(!confirm('用模板覆盖现在写的内容？'))return;S.drafts[hw().id]=DRAFT;save();render(true);toast('已恢复模板');return}
+  if(a==='genName'){
+    const sid=document.getElementById('f_sid').value.trim(),nm=document.getElementById('f_nm').value.trim(),tp=document.getElementById('f_topic').value.trim();
+    S.name={sid,nm,topic:tp};save();
+    const base=[sid||'学号',nm||'姓名',tp||'内容'].join(' ');
+    const f1=base+' 创意作品.mp4',f2=base+' 设计说明.pdf';
+    document.getElementById('nameBox').innerHTML=
+      `<div class="nameline"><span class="tag">创意作品</span><code>${esc(f1)}</code><button class="btn ghost sm" data-act="copy" data-v="${esc(f1)}">复制</button></div>
+       <div class="nameline"><span class="tag">设计说明</span><code>${esc(f2)}</code><button class="btn ghost sm" data-act="copy" data-v="${esc(f2)}">复制</button></div>`;
+    toast('生成好了，记得按实际文件改扩展名');return;
+  }
+  if(a==='delItem'){hw()[el.dataset.kind].splice(+el.dataset.i,1);save();render(true);return}
+  if(a==='delEvt'){S.events=S.events.filter(x=>x.id!==el.dataset.id);save();render(true);return}
+  if(a==='delTask'){S.tasks=S.tasks.filter(x=>x.id!==el.dataset.id);save();render(true);return}
+  if(a==='tFilter'){taskFilter=el.dataset.v;render(true);return}
+  if(a==='sFilter'){siteFilter=el.dataset.v;editSiteId=null;render(true);return}
+  if(a==='editSite'){editSiteId=el.dataset.id;render(true);return}
+  if(a==='cancelEdit'){editSiteId=null;render(true);return}
+  if(a==='delSite'){if(!confirm('删掉这个网站？'))return;S.sites=S.sites.filter(x=>x.id!==el.dataset.id);editSiteId=null;save();render(true);return}
+  if(a==='pickHw'){S.curHw=el.dataset.id;save();render(true);return}
+  if(a==='addHw'){
+const nm=prompt(t('作业名称（例如：期末作品）'));if(!nm||!nm.trim())return;
+    const c=prompt('课程名称','非线性编辑')||'未分类';
+    const dl=prompt('截止时间（格式 2026-12-01T18:30）','2026-12-01T18:30')||'2026-12-01T18:30';
+    const id=uid();
+    S.hws.push({id,title:nm.trim(),course:c.trim(),score:'—',deadline:dl.trim(),note:'',
+      deliver:[{t:'作品 / 文件',done:false},{t:'说明文档',done:false}],
+      check:[{t:'命名规范核对',done:false},{t:'确认已点「提交」',done:false}]});
+    S.curHw=id;save();render(true);toast('新作业加好了');return;
+  }
+  if(a==='delHw'){
+    if(!confirm('删除「'+hw().title+'」这份作业和它的清单？'))return;
+    S.hws=S.hws.filter(x=>x.id!==S.curHw);S.curHw=S.hws[0].id;save();render(true);return;
+  }
+  if(a==='export'){
+    const blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});
+    const u=URL.createObjectURL(blob),a2=document.createElement('a');
+    a2.href=u;a2.download='小玉的工作台_备份_'+today()+'.json';a2.click();URL.revokeObjectURL(u);
+    toast('备份已下载');return;
+  }
+  if(a==='import'){document.getElementById('importFile').click();return}
+  if(a==='reset'){if(!confirm('清空所有勾选和记录，回到初始状态？建议先导出备份。'))return;S=JSON.parse(JSON.stringify(DEFAULT));taskFilter='all';siteFilter='全部';editSiteId=null;save();render();toast('已重置');return}
+});
+document.addEventListener('submit',e=>{
+  e.preventDefault();const f=e.target.dataset.form;if(!f)return;
+  const d=new FormData(e.target),g=k=>String(d.get(k)||'').trim();
+  const S2=e.target;
+  if(S2.id==='billMonthPick'||S2.id==='billYearPick'){return}   // 由 change 处理
+  if(f==='addItem'){hw()[g('kind')].push({t:g('t'),done:false});save();render(true);return}
+  if(f==='addTask'||f==='quickTask'){
+    S.tasks.push({id:uid(),t:g('t'),cat:g('cat')||'其他',done:false,ts:Date.now(),
+      pri:g('pri')||'p1',due:g('due')||''});
+    save();render(true);toast('任务加好了');return;
+  }
+  if(f==='addEvt'){
+    S.events.push({id:uid(),title:g('title'),date:g('date'),time:g('time'),cat:g('cat')||'其他',done:false,pri:g('pri')||'p1'});
+    save();render(true);toast('日程加好了');return;
+  }
+  if(f==='quickEvt'){
+    S.events.push({id:uid(),title:g('title'),date:today(),time:g('time'),cat:'生活',done:false,pri:g('pri')||'p1'});
+    save();render(true);toast('加到今天了');return;
+  }
+  if(f==='addBill'){
+    const amt=Math.abs(parseFloat(g('amt')));
+    if(!amt){toast('金额要大于 0');return}
+    S.bills=S.bills||[];
+    S.bills.push({id:uid(),type:g('type')==='in'?'in':'out',amt,cat:g('cat')||'其他',date:g('date')||today(),note:g('note'),ts:Date.now()});
+    save();render(true);toast((g('type')==='in'?'收入':'支出')+' ¥'+fmt(amt)+' 记好了');return;
+  }
+  if(f==='aiCfg'){
+    S.aiProf={provider:g('provider'),model:g('model'),key:g('key'),endpoint:g('endpoint')};
+    save();render(true);toast(g('key')?'配置已保存':'已保存（还没填 Key）');return;
+  }
+  if(f==='addAcc'){
+    const n=g('n');if(!n)return;
+    const accs=accounts();if(accs.indexOf(n)<0){accs.push(n);saveAccounts(accs)}
+    switchUser(n);toast('账户「'+n+'」建好了');return;
+  }
+  if(f==='site'){
+    const u=normUrl(g('url'));
+    if(!u){toast('网址看起来不对，检查一下再试');return}
+    const o={name:g('name'),url:u,cat:g('cat')||'其他',note:g('note')};
+    if(!o.name){toast('给网站起个名字吧');return}
+    if(editSiteId){const s=S.sites.find(x=>x.id===editSiteId);if(s)Object.assign(s,o);editSiteId=null;toast('改好了')}
+    else{S.sites.push(Object.assign({id:uid()},o));toast('网站加好了，点「打开」就能跳过去')}
+    save();render(true);return;
+  }
+});
+document.addEventListener('change',e=>{
+  const el=e.target.closest('[data-chg]');if(!el)return;
+  const k=el.dataset.chg;
+  if(k==='deliver'||k==='check'){
+    hw()[k][+el.dataset.i].done=el.checked;save();
+    const ring=document.querySelector('.ring');
+    if(ring){const p=pct(hw());ring.style.setProperty('--p',p+'%');ring.querySelector('b').textContent=p+'%'}
+    renderTop();return;
+  }
+  if(k==='evt'){const x=S.events.find(y=>y.id===el.dataset.id);if(x)x.done=el.checked;save();render(true);return}
+  if(k==='task'){
+    const x=S.tasks.find(y=>y.id===el.dataset.id);if(x)x.done=el.checked;
+    save();render(true);return;
+  }
+});
+/* 优先级 / 截止时间 / 图片选择 */
+document.addEventListener('change',async e=>{
+  const t=e.target;
+  /* 账单的时间选择器 */
+  if(t.id==='billMonthPick'&&t.value){billMonthFilter=t.value;billMode='month';render(true);return}
+  if(t.id==='billYearPick'&&t.value){billYearFilter=+t.value;billMode='year';render(true);return}
+  if(t.id==='langSel'){setLang(t.value);return}
+  if(t.dataset&&t.dataset.pri){
+    const kind=t.dataset.pri,id=t.dataset.id,v=t.value;
+    if(kind==='task'){const x=S.tasks.find(y=>y.id===id);if(x)x.pri=v}
+    else if(kind==='evt'){const x=S.events.find(y=>y.id===id);if(x)x.pri=v}
+    else if(kind==='hw'){const x=S.hws.find(y=>y.id===id);if(x)x.pri=v}
+    save();render(true);toast('优先级改成「'+priOf(v).n+'」');return;
+  }
+  if(t.dataset&&t.dataset.dl){
+    const x=S.hws.find(y=>y.id===t.dataset.dl);if(x)x.deadline=t.value;save();render(true);return;
+  }
+  if(t.dataset&&t.dataset.img){
+    const mode=t.dataset.img;
+    try{const url=await readImageFile(t.files[0]);const b=impState(mode);b.img=url;syncImp();save();render(true);toast('图片准备好了，点「识别图片」');}
+    catch(err){toast(err.message)}
+    t.value='';return;
+  }
+});
+document.addEventListener('input',e=>{
+  const id=e.target.id;
+  if(id&&id.indexOf('imp_')===0){syncImp()}
+  if(e.target.dataset&&e.target.dataset.pd){
+    const i=+e.target.dataset.i,k=e.target.dataset.pd;
+    const b=window._impBox;
+    if(b&&b.prev&&b.prev[i])b.prev[i][k]=e.target.value;
+  }
+  if(id==='memo'){S.memo=e.target.value;save()}
+  if(id==='draft'){S.drafts[hw().id]=e.target.value;save()}
+  if(id==='refs'){S.refs=e.target.value;save()}
+  if(id==='f_sid'||id==='f_nm'||id==='f_topic'){
+    S.name={sid:document.getElementById('f_sid').value,nm:document.getElementById('f_nm').value,topic:document.getElementById('f_topic').value};save();
+  }
+});
+document.addEventListener('change',function(e){
+  if(e.target.id==='darkT'){P.dark=e.target.checked;saveProf(P);applyTheme(P);toast(P.dark?'深色模式已开':'改回浅色');}
+  if(e.target.id==='avFile'){
+    const f=e.target.files&&e.target.files[0];e.target.value='';
+    if(!f)return;
+    if(!/^image\//.test(f.type)){toast('这个不是图片文件');return}
+    shrinkImage(f,160).then(url=>{
+      P.avatar={k:'img',v:url};saveProf(P);renderUser();render(true);
+      toast('头像换好了');
+    }).catch(err=>toast(String(err.message||err).slice(0,40)));
+  }
+});
+/* 收支切换时，分类跟着换 */
+document.addEventListener('change',e=>{
+  if(e.target.id==='billType'){
+    const sel=e.target,isIn=sel.value==='in';
+    const catSel=sel.closest('form').querySelector('[name=cat]');
+    const cats=isIn?CAT_IN:CAT_OUT;
+    catSel.innerHTML=cats.map(c=>`<option>${c}</option>`).join('');
+  }
+});
+/* 图片：拖进导入框 或 在文本框里 Ctrl+V */
+document.addEventListener('paste',async e=>{
+  const zone=e.target.closest&&e.target.closest('.imp-drop');if(!zone)return;
+  const items=e.clipboardData&&e.clipboardData.items;if(!items)return;
+  for(const it of items){
+    if(it.type.indexOf('image')===0){
+      e.preventDefault();
+      const mode=zone.dataset.drop;
+      try{const url=await readImageFile(it.getAsFile());const b=impState(mode);b.img=url;syncImp();save();render(true);toast('图片粘好了，点「识别图片」');}
+      catch(err){toast(err.message)}
+      return;
+    }
+  }
+});
+document.addEventListener('dragover',e=>{
+  const z=e.target.closest&&e.target.closest('.imp-drop');if(!z)return;
+  e.preventDefault();z.classList.add('dragover');
+});
+document.addEventListener('dragleave',e=>{
+  const z=e.target.closest&&e.target.closest('.imp-drop');if(z)z.classList.remove('dragover');
+});
+document.addEventListener('drop',async e=>{
+  const z=e.target.closest&&e.target.closest('.imp-drop');if(!z)return;
+  e.preventDefault();z.classList.remove('dragover');
+  const f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];if(!f)return;
+  const mode=z.dataset.drop;
+  try{const url=await readImageFile(f);const b=impState(mode);b.img=url;syncImp();save();render(true);toast('图片放好了，点「识别图片」');}
+  catch(err){toast(err.message)}
+});
+document.getElementById('brand').addEventListener('click',()=>{S.tab='me';save();render()});
+function renderUser(){
+  const who=(P.user||'小玉').trim()||'小玉';
+  const av=document.getElementById('avatar');
+  const a=P.avatar;
+  av.className='avatar';
+  av.innerHTML='';
+  if(a&&a.k==='img'&&a.v){av.innerHTML='<img src="'+esc(a.v)+'" alt="">'}
+  else if(a&&a.k==='emoji'&&a.v){av.classList.add('emoji');av.textContent=a.v}
+  else{av.textContent=who.charAt(0)}
+  const zh=curLang()==='zh';
+  document.getElementById('userName').textContent=who+(zh?'的工作台':'\'s Workspace');
+  document.getElementById('userSub').textContent=accounts().length>1
+    ?(zh?('当前：'+who+' · 点这里切换'):('Current: '+who+' · click to switch'))
+    :(zh?'点这里换颜色 / 加账户':'Click for colors / accounts');
+  applyLang();
+}
+/* 切换语言：只影响当前账户，立刻重绘 */
+function setLang(k){
+  P.lang=k;saveProf(P);
+  applyLang();renderUser();render(true);
+  window.scrollTo({top:0,behavior:'smooth'});
+  toast(k==='zh'?'界面语言：中文':('Language: '+(LANGS.find(x=>x.k===k)||{}).n));
+}
+function mixTheme(hex){
+  const h2r=h=>{h=h.replace('#','');return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)]};
+  const mix=(a,b,t)=>a.map((v,i)=>Math.round(v+(b[i]-v)*t));
+  const toHex=a=>'#'+a.map(v=>Math.max(0,Math.min(255,v)).toString(16).padStart(2,'0')).join('');
+  const base=h2r(hex);
+  return {brand:hex,brand2:toHex(mix(base,[255,255,255],0.22)),soft:toHex(mix(base,[255,255,255],0.90)),
+    soft2:toHex(mix(base,[255,255,255],0.78)),dark:toHex(mix(base,[0,0,0],0.22)),ring:'rgba('+base.join(',')+',.10)'};
+}
+document.getElementById('importFile').addEventListener('change',function(){
+  const f=this.files[0];if(!f)return;const r=new FileReader();
+  r.onload=()=>{try{const o=JSON.parse(r.result);if(!o.hws)throw 0;S=Object.assign(JSON.parse(JSON.stringify(DEFAULT)),o);save();render();toast('导入成功')}catch(err){toast('这个文件读不了，换一个备份试试')}};
+  r.readAsText(f);this.value='';
+});
+renderUser();
+render();
+
+</script>
+
+
+</body>
+</html>
