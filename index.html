@@ -331,7 +331,12 @@ body.dark .toggle span::after{background:#E8EDEA}
 @media(max-width:900px){
   .app{flex-direction:column}
   .side{width:100%;flex:none;height:auto;position:static;padding:14px 16px;border-right:none;border-bottom:1px solid var(--line)}
-  .brand{padding-bottom:12px}.nav{flex-direction:row;overflow-x:auto;gap:5px}.nav button{white-space:nowrap;width:auto;padding:8px 12px}
+  .brand{padding-bottom:12px}
+  /* 手机：七个导航平铺，均分宽度，竖排图标+文字，一眼全看得到 */
+  .nav{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;overflow:visible}
+  .nav button{flex-direction:column;gap:2px;padding:7px 0;font-size:10.5px;border-radius:9px;white-space:nowrap;width:auto;min-width:0}
+  .nav button .ico{font-size:16px;line-height:1.1}
+  .nav .nl{font-size:10px;letter-spacing:-.2px}
   .nav .badge{display:none}
   .side-foot{margin-top:12px;padding-top:10px;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
   .side-foot .lbl,.side-foot .copy{display:none}
